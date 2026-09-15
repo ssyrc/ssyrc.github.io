@@ -194,20 +194,16 @@ a:hover { text-decoration: underline; }
 .more-link { margin-top: 1.4rem; font-size: 0.9rem; }
 
 /* 주제별 색. 주제를 추가하면 여기 한 줄만 더 넣으면 배지와 카드에 함께 적용됩니다. */
-.cat-cs            { --c-fg: #3f51b5; --c-bg: #eef2ff; --c-line: #dbe2ff; }
-.cat-server        { --c-fg: #0f766e; --c-bg: #ecfdf5; --c-line: #d6f5e6; }
-.cat-network       { --c-fg: #1d5fa8; --c-bg: #eff6ff; --c-line: #dbeafe; }
-.cat-power-cooling { --c-fg: #b45309; --c-bg: #fff7ed; --c-line: #ffedd5; }
-.cat-ai-infra      { --c-fg: #7c3aed; --c-bg: #f5f3ff; --c-line: #e9e2ff; }
-.cat-til           { --c-fg: #9d266d; --c-bg: #fdf2f8; --c-line: #fce7f3; }
+.cat-cs             { --c-fg: #3f51b5; --c-bg: #eef2ff; --c-line: #dbe2ff; }
+.cat-server-network { --c-fg: #0f766e; --c-bg: #ecfdf5; --c-line: #d6f5e6; }
+.cat-hpc            { --c-fg: #b45309; --c-bg: #fff7ed; --c-line: #ffedd5; }
+.cat-ai             { --c-fg: #7c3aed; --c-bg: #f5f3ff; --c-line: #e9e2ff; }
 
 @media (prefers-color-scheme: dark) {
-  .cat-cs            { --c-fg: #a5b4fc; --c-bg: #1e2140; --c-line: #2b2f57; }
-  .cat-server        { --c-fg: #6ee7b7; --c-bg: #10241f; --c-line: #1b3a33; }
-  .cat-network       { --c-fg: #7fc0f5; --c-bg: #13202f; --c-line: #1e3550; }
-  .cat-power-cooling { --c-fg: #fbbf5c; --c-bg: #2a1e10; --c-line: #46331a; }
-  .cat-ai-infra      { --c-fg: #c4b5fd; --c-bg: #1f1830; --c-line: #33294d; }
-  .cat-til           { --c-fg: #f0a2ce; --c-bg: #2b1424; --c-line: #48213a; }
+  .cat-cs             { --c-fg: #a5b4fc; --c-bg: #1e2140; --c-line: #2b2f57; }
+  .cat-server-network { --c-fg: #6ee7b7; --c-bg: #10241f; --c-line: #1b3a33; }
+  .cat-hpc            { --c-fg: #fbbf5c; --c-bg: #2a1e10; --c-line: #46331a; }
+  .cat-ai             { --c-fg: #c4b5fd; --c-bg: #1f1830; --c-line: #33294d; }
 }
 
 /* 배지 */

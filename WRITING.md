@@ -10,7 +10,7 @@
 파일 이름은 반드시 `YYYY-MM-DD-영문-슬러그.md` 형식입니다. 날짜가 없으면 글로 인식되지 않습니다.
 
 ```
-_posts/ko/2026-09-15-rack-power-budget.md
+_posts/ko/2026-09-20-rack-power-budget.md
 ```
 
 파일 맨 위에 앞머리(front matter)를 넣습니다.
@@ -19,14 +19,14 @@ _posts/ko/2026-09-15-rack-power-budget.md
 ---
 title: "랙 하나의 전력 예산"
 date: 2026-09-15
-category: power-cooling
+category: hpc
 tags: [rack, power]
 ---
 ```
 
 그 아래부터는 그냥 마크다운으로 쓰면 됩니다.
-`_templates/` 안에 복사해서 쓸 수 있는 템플릿 세 개가 들어 있습니다
-(`post-ko.md`, `post-en.md`, `til.md`).
+`_templates/` 안에 복사해서 쓸 수 있는 템플릿이 들어 있습니다
+(`post-ko.md`, `post-en.md`).
 
 가장 빠른 방법은 GitHub 웹에서 바로 만드는 것입니다:
 저장소 → `_posts/ko` → **Add file** → **Create new file**.
@@ -38,7 +38,7 @@ tags: [rack, power]
 | --- | --- | --- |
 | `title` | ✅ | 글 제목 |
 | `date` | ✅ | `2026-09-15` 형식 |
-| `category` | 권장 | `cs` `server` `network` `power-cooling` `ai-infra` `til` 중 하나 |
+| `category` | 권장 | `cs` `server-network` `hpc` `ai` 중 하나 |
 | `tags` | | `[rack, power]` 처럼 목록으로 |
 | `ref` | | 한국어판·영어판을 잇는 열쇠말. 두 글에 같은 값을 넣으면 서로 링크됩니다 |
 | `mermaid` | | `true` 면 다이어그램 기능을 불러옵니다 |
@@ -86,8 +86,8 @@ graph LR
 나중에 영어 글을 한 편이라도 올리면 링크가 저절로 다시 생깁니다.
 같은 글의 두 언어판은 `ref` 값으로 묶습니다.
 
-- `_posts/ko/2026-09-15-rack-power-budget.md` → `ref: rack-power-budget`
-- `_posts/en/2026-09-15-rack-power-budget.md` → `ref: rack-power-budget`
+- `_posts/ko/2026-09-20-rack-power-budget.md` → `ref: rack-power-budget`
+- `_posts/en/2026-09-20-rack-power-budget.md` → `ref: rack-power-budget`
 
 `ref` 가 같은 두 글 사이에는 서로 가는 링크가 자동으로 생깁니다.
 

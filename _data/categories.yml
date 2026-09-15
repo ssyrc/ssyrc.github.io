@@ -3,35 +3,23 @@
 - key: cs
   ko: "CS 기초"
   en: "CS Fundamentals"
-  desc_ko: "운영체제, 네트워크 이론, 컴퓨터 구조 같은 바탕이 되는 개념."
-  desc_en: "Operating systems, networking theory, computer architecture."
+  desc_ko: "운영체제, 컴퓨터 구조, 네트워크 이론 같은 바탕이 되는 개념."
+  desc_en: "Operating systems, computer architecture, networking theory."
 
-- key: server
-  ko: "서버 구조"
-  en: "Server Architecture"
-  desc_ko: "CPU·메모리·스토리지, 랙과 섀시, 서버 한 대가 만들어지는 방식."
-  desc_en: "CPU, memory, storage, racks and chassis — how a machine is put together."
+- key: server-network
+  ko: "서버/네트워크"
+  en: "Server & Networking"
+  desc_ko: "CPU·메모리·스토리지부터 랙과 ToR 스위치, 데이터센터 토폴로지까지."
+  desc_en: "From CPU, memory and storage to racks, ToR switches and data center topology."
 
-- key: network
-  ko: "네트워크"
-  en: "Networking"
-  desc_ko: "데이터센터 토폴로지, 스위칭, 트래픽 흐름."
-  desc_en: "Data center topology, switching, traffic flow."
+- key: hpc
+  ko: "HPC 인프라"
+  en: "HPC Infrastructure"
+  desc_ko: "클러스터 구성과 인터커넥트, 그리고 이를 떠받치는 전력 분배와 냉각."
+  desc_en: "Cluster design and interconnects, plus the power and cooling underneath."
 
-- key: power-cooling
-  ko: "전력·냉각"
-  en: "Power & Cooling"
-  desc_ko: "전력 분배, 발열과 냉각, PUE 같은 효율 지표."
-  desc_en: "Power distribution, heat and cooling, efficiency metrics such as PUE."
-
-- key: ai-infra
-  ko: "AI·HPC 인프라"
-  en: "AI & HPC Infrastructure"
-  desc_ko: "GPU 클러스터, 학습·추론 워크로드, 인터커넥트."
-  desc_en: "GPU clusters, training and inference workloads, interconnects."
-
-- key: til
-  ko: "TIL"
-  en: "TIL"
-  desc_ko: "오늘 배운 것 — 15분짜리 짧은 메모."
-  desc_en: "Today I learned — short notes, fifteen minutes at a time."
+- key: ai
+  ko: "AI"
+  en: "AI"
+  desc_ko: "학습·추론 워크로드, GPU 클러스터, LLM 서빙."
+  desc_en: "Training and inference workloads, GPU clusters, LLM serving."
