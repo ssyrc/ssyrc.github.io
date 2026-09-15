@@ -49,6 +49,7 @@ exclude:
   - vendor
   - .github
   - _templates
+  - assets/images/README.md
 
 # ---------------------------------------------------------------------------
 # 글 기본값 — _posts/ko 아래 글은 한국어, _posts/en 아래 글은 영어로 자동 분류.
