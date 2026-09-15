@@ -1,13 +1,13 @@
 {% assign lang = page.lang | default: site.lang %}
 {% assign t = site.data.ui[lang] %}
-{% if lang == 'en' %}{% assign home_url = '/en/' %}{% assign archive_url = '/en/archive/' %}{% assign about_url = '/en/about/' %}
-{% else %}{% assign home_url = '/' %}{% assign archive_url = '/archive/' %}{% assign about_url = '/about/' %}{% endif %}
+{% if lang == 'en' %}
+  {% assign home_url = '/en/' %}{% assign archive_url = '/en/archive/' %}{% assign about_url = '/en/about/' %}
+{% else %}
+  {% assign home_url = '/' %}{% assign archive_url = '/archive/' %}{% assign about_url = '/about/' %}
+{% endif %}
+{% assign posts_in_lang = site.posts | where: "lang", lang %}
 
-{% comment %}
-  언어 전환 링크는 넘어갈 쪽에 글이 있을 때만 보여준다.
-  영어 글을 한 편도 안 올렸으면 한국어 페이지에 English 링크가 나오지 않는다.
-  나중에 _posts/en/ 에 글을 하나 올리면 링크가 저절로 다시 생긴다.
-{% endcomment %}
+{% comment %} 언어 전환 링크는 넘어갈 쪽에 글이 있을 때만 보여준다 {% endcomment %}
 {% if lang == 'en' %}
   {% assign show_lang_switch = true %}
 {% else %}
@@ -17,11 +17,30 @@
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="site-title" href="{{ home_url | relative_url }}">{{ site.title }}</a>
-    <nav class="site-nav">
-      <a href="{{ archive_url | relative_url }}">{{ t.archive }}</a>
-      <a href="{{ about_url | relative_url }}">{{ t.about }}</a>
-      {% if show_lang_switch %}<a class="lang-switch" href="{{ t.other_lang_home | relative_url }}">{{ t.other_lang }}</a>{% endif %}
+    <a class="brand" href="{{ home_url | relative_url }}">{{ site.title }}<span class="dot">.</span></a>
+
+    <nav class="site-nav" aria-label="{{ t.nav_label }}">
+      <a class="nav-link{% if page.url == home_url %} is-current{% endif %}" href="{{ home_url | relative_url }}">{{ t.home }}</a>
+
+      <details class="dropdown" data-dropdown>
+        <summary>{{ t.categories }} <span class="caret" aria-hidden="true">▾</span></summary>
+        <div class="dropdown-menu">
+          {% for cat in site.data.categories %}
+          {% assign in_cat = posts_in_lang | where: "category", cat.key %}
+          <a class="dropdown-item" style="--c: {{ cat.color }}" href="{{ archive_url | relative_url }}#{{ cat.key }}">
+            <span class="swatch" aria-hidden="true"></span>
+            <span>
+              <span class="di-name">{{ cat[lang] }}</span>
+              <span class="di-desc">{% if lang == 'en' %}{{ cat.desc_en }}{% else %}{{ cat.desc_ko }}{% endif %}</span>
+            </span>
+            <span class="di-count">{{ in_cat.size }}</span>
+          </a>
+          {% endfor %}
+        </div>
+      </details>
+
+      <a class="nav-link{% if page.url == about_url %} is-current{% endif %}" href="{{ about_url | relative_url }}">{{ t.about }}</a>
+      {% if show_lang_switch %}<a class="nav-link" href="{{ t.other_lang_home | relative_url }}">{{ t.other_lang }}</a>{% endif %}
     </nav>
   </div>
 </header>

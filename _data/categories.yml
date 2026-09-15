@@ -1,25 +1,34 @@
-# 글의 category 값과 여기 key 를 맞추면 목록·배지에 이름이 붙습니다.
-# 주제를 추가하고 싶으면 항목을 하나 더 넣기만 하면 됩니다.
+# 주제 목록. key 는 글 앞머리의 category 값과 맞춥니다.
+# color  : 배지·점·필터에 쓰이는 대표색
+# cover  : 글에 cover 를 지정하지 않았을 때 쓰는 기본 대표 이미지
 - key: cs
   ko: "CS 기초"
   en: "CS Fundamentals"
   desc_ko: "운영체제, 컴퓨터 구조, 네트워크 이론 같은 바탕이 되는 개념."
   desc_en: "Operating systems, computer architecture, networking theory."
+  color: "#5B6CF9"
+  cover: "/assets/images/covers/topic-cs.svg"
 
 - key: server-network
   ko: "서버/네트워크"
   en: "Server & Networking"
   desc_ko: "CPU·메모리·스토리지부터 랙과 ToR 스위치, 데이터센터 토폴로지까지."
   desc_en: "From CPU, memory and storage to racks, ToR switches and data center topology."
+  color: "#0EA5E9"
+  cover: "/assets/images/covers/topic-server-network.svg"
 
 - key: hpc
   ko: "HPC 인프라"
   en: "HPC Infrastructure"
   desc_ko: "클러스터 구성과 인터커넥트, 그리고 이를 떠받치는 전력 분배와 냉각."
   desc_en: "Cluster design and interconnects, plus the power and cooling underneath."
+  color: "#7C6BF7"
+  cover: "/assets/images/covers/topic-hpc.svg"
 
 - key: ai
   ko: "AI"
   en: "AI"
   desc_ko: "학습·추론 워크로드, GPU 클러스터, LLM 서빙."
   desc_en: "Training and inference workloads, GPU clusters, LLM serving."
+  color: "#A855F7"
+  cover: "/assets/images/covers/topic-ai.svg"

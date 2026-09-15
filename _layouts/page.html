@@ -1,9 +1,13 @@
 ---
 layout: default
 ---
-<article class="page">
-  <h1 class="page-title">{{ page.title }}</h1>
-  <div class="prose">
-    {{ content }}
-  </div>
-</article>
+{% assign lang = page.lang | default: site.lang %}
+<div class="wrap">
+  <article class="page">
+    <p class="page-kicker">{{ site.title }}</p>
+    <h1 class="page-title">{{ page.title }}</h1>
+    <div class="prose page-lead">
+      {{ content }}
+    </div>
+  </article>
+</div>

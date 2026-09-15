@@ -1,0 +1,16 @@
+{% comment %}
+  주제 필터 칩. JS 가 있으면 그 자리에서 걸러주고, 없으면 글 목록의 해당 주제로 이동합니다.
+  사용: {% include filters.html posts=posts lang=lang archive_url=archive_url %}
+{% endcomment %}
+{% assign t = site.data.ui[include.lang] %}
+<div class="filters" data-filters role="group" aria-label="{{ t.by_category }}">
+  <a class="chip is-on" href="{{ include.archive_url | relative_url }}" data-filter="all">
+    {{ t.all }} <span class="n">{{ include.posts.size }}</span>
+  </a>
+  {% for cat in site.data.categories %}
+  {% assign in_cat = include.posts | where: "category", cat.key %}
+  <a class="chip" style="--c: {{ cat.color }}" href="{{ include.archive_url | relative_url }}#{{ cat.key }}" data-filter="{{ cat.key }}">
+    <span class="swatch" aria-hidden="true"></span>{{ cat[include.lang] }} <span class="n">{{ in_cat.size }}</span>
+  </a>
+  {% endfor %}
+</div>

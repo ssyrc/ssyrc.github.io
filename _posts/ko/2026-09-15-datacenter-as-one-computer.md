@@ -4,6 +4,7 @@ date: 2026-09-15
 category: server-network
 tags: [datacenter, rack, roadmap]
 ref: datacenter-as-one-computer
+cover: /assets/images/covers/datacenter-layers.svg
 mermaid: true
 ---
 

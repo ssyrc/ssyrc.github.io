@@ -1,0 +1,27 @@
+{% comment %}
+  글 카드. 사용: {% include post-card.html post=post lang=lang %}
+{% endcomment %}
+{% assign p = include.post %}
+{% assign cat = site.data.categories | where: "key", p.category | first %}
+{% if p.cover %}{% assign cover = p.cover %}
+{% elsif cat.cover %}{% assign cover = cat.cover %}
+{% else %}{% assign cover = '/assets/images/covers/topic-cs.svg' %}{% endif %}
+
+<article class="card" data-cat="{{ p.category }}">
+  <a class="card-media" href="{{ p.url | relative_url }}" tabindex="-1" aria-hidden="true">
+    <img src="{{ cover | relative_url }}" alt="" width="1200" height="675" loading="lazy" decoding="async">
+  </a>
+  <div class="card-body">
+    {% if cat %}
+    <span class="badge" style="--c: {{ cat.color }}"><span class="swatch" aria-hidden="true"></span>{{ cat[include.lang] }}</span>
+    {% endif %}
+    <h3 class="card-title"><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h3>
+    {% if p.excerpt %}
+    <p class="card-excerpt">{{ p.excerpt | strip_html | normalize_whitespace | truncate: 110 }}</p>
+    {% endif %}
+    <p class="card-foot">
+      <time datetime="{{ p.date | date_to_xmlschema }}">{{ p.date | date: "%Y.%m.%d" }}</time>
+      <span class="card-arrow" aria-hidden="true">&rarr;</span>
+    </p>
+  </div>
+</article>

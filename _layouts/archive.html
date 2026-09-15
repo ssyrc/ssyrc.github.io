@@ -4,39 +4,35 @@ layout: default
 {% assign lang = page.lang | default: site.lang %}
 {% assign t = site.data.ui[lang] %}
 {% assign posts = site.posts | where: "lang", lang %}
+{% if lang == 'en' %}{% assign archive_url = '/en/archive/' %}{% else %}{% assign archive_url = '/archive/' %}{% endif %}
 
-<h1 class="page-title">{{ t.all_posts }} <span class="count">{{ posts.size }}</span></h1>
+<div class="wrap">
+  <section class="section">
+    <div class="section-head">
+      <h1 class="section-title">{{ t.all_posts }} <span class="count-pill">{{ posts.size }}</span></h1>
+      {% include filters.html posts=posts lang=lang archive_url=archive_url %}
+    </div>
 
-{% if posts.size > 0 %}
-<section class="archive-section">
-  <h2 class="section-title">{{ t.by_category }}</h2>
-  {% for cat in site.data.categories %}
-  {% assign in_cat = posts | where: "category", cat.key %}
-  {% if in_cat.size > 0 %}
-  <div class="archive-group" id="{{ cat.key }}">
-    <h3 class="archive-group-title">
-      <span class="cat cat-{{ cat.key }}">{{ cat[lang] }}</span>
-      <span class="count">{{ in_cat.size }}</span>
-    </h3>
-    <p class="archive-group-desc">{% if lang == 'en' %}{{ cat.desc_en }}{% else %}{{ cat.desc_ko }}{% endif %}</p>
-    {% include post-list.html posts=in_cat lang=lang %}
-  </div>
-  {% endif %}
-  {% endfor %}
-</section>
-
-<section class="archive-section">
-  <h2 class="section-title">{{ t.by_year }}</h2>
-  {% assign years = posts | group_by_exp: "p", "p.date | date: '%Y'" %}
-  {% for year in years %}
-  <div class="archive-group">
-    <h3 class="archive-group-title">{{ year.name }} <span class="count">{{ year.items.size }}</span></h3>
-    {% include post-list.html posts=year.items lang=lang compact=true %}
-  </div>
-  {% endfor %}
-</section>
-{% else %}
-<p class="empty">{{ t.no_posts }}</p>
-{% endif %}
+    {% if posts.size == 0 %}
+      <p class="empty">{{ t.no_posts }}</p>
+    {% else %}
+      {% for cat in site.data.categories %}
+      {% assign in_cat = posts | where: "category", cat.key %}
+      {% if in_cat.size > 0 %}
+      <div class="archive-cat" id="{{ cat.key }}">
+        <div class="archive-cat-head">
+          <h3>{{ cat[lang] }}</h3>
+          <span class="count-pill">{{ in_cat.size }}</span>
+        </div>
+        <p class="archive-cat-desc">{% if lang == 'en' %}{{ cat.desc_en }}{% else %}{{ cat.desc_ko }}{% endif %}</p>
+        <div class="card-grid">
+          {% for p in in_cat %}{% include post-card.html post=p lang=lang %}{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    {% endif %}
+  </section>
+</div>
 
 {{ content }}

@@ -25,8 +25,10 @@ _posts/en/            영어 글
 _drafts/              공개 전 초안 (사이트에 안 나옴)
 _templates/           글 템플릿 (사이트에 안 나옴)
 _layouts/             페이지 뼈대
-_includes/            머리말·꼬리말·목록 등 조각
-assets/css/style.scss 스타일 전체
+_includes/            머리말·꼬리말·슬라이더·카드 등 조각
+assets/css/style.scss 스타일 전체 (맨 위 :root 에서 색 팔레트 관리)
+assets/js/site.js     최신 글 슬라이더, 주제 필터, Categories 메뉴
+assets/images/covers/ 주제별 기본 대표 이미지 (SVG)
 ```
 
 ## 주소 구성
@@ -49,6 +51,10 @@ assets/css/style.scss 스타일 전체
   같은 글의 두 언어판은 앞머리의 `ref` 값으로 서로 연결됩니다.
 - 다이어그램(Mermaid)과 수식(KaTeX). 쓰는 글에서만 불러오도록 앞머리로 켭니다.
 - 다크 모드는 기기 설정을 따라갑니다.
+- 홈 상단에 최신 글 3편이 5초 간격으로 자동 전환되는 슬라이더. 마우스를 올리면 멈춥니다.
+- 주제 필터(홈·글 목록)와 Categories 메뉴. 자바스크립트가 꺼져 있어도
+  첫 슬라이드와 전체 글 목록은 그대로 보이고, 필터는 글 목록 링크로 동작합니다.
+- 모든 글에 대표 이미지. 지정하지 않으면 주제별 기본 그림이 붙습니다.
 - RSS, 사이트맵, SEO 메타 태그 자동 생성. RSS 는 화면에 링크를 걸지 않았지만
   `<head>` 의 메타 태그로 피드 리더가 자동 인식합니다.
 - 푸시할 때마다 GitHub Actions 의 **Build check** 가 빌드 성공 여부를 확인합니다.

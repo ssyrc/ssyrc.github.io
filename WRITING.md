@@ -41,6 +41,7 @@ tags: [rack, power]
 | `category` | 권장 | `cs` `server-network` `hpc` `ai` 중 하나 |
 | `tags` | | `[rack, power]` 처럼 목록으로 |
 | `ref` | | 한국어판·영어판을 잇는 열쇠말. 두 글에 같은 값을 넣으면 서로 링크됩니다 |
+| `cover` | | 대표 이미지 경로. 안 넣으면 주제별 기본 그림이 자동으로 붙습니다 |
 | `mermaid` | | `true` 면 다이어그램 기능을 불러옵니다 |
 | `math` | | `true` 면 수식 기능을 불러옵니다 |
 | `updated` | | 나중에 크게 고쳤을 때 `2026-10-01` 처럼 |
@@ -68,9 +69,25 @@ graph LR
 
 앞머리에 `math: true` 를 넣으면 `$...$`(줄 안), `$$...$$`(별도 줄) 가 수식으로 보입니다.
 
-## 6. 그림
+## 6. 대표 이미지
 
-`assets/images/` 에 파일을 올리고 이렇게 씁니다.
+모든 글에는 목록과 본문 맨 위에 쓰이는 대표 이미지가 붙습니다.
+**아무것도 안 하면 주제별 기본 그림이 자동으로 들어갑니다.** 신경 쓰지 않아도 됩니다.
+
+직접 지정하고 싶을 때만 앞머리에 한 줄 넣으세요.
+
+```yaml
+cover: /assets/images/covers/내-그림.svg
+```
+
+주제별 기본 그림은 `assets/images/covers/` 에 있습니다
+(`topic-cs.svg`, `topic-server-network.svg`, `topic-hpc.svg`, `topic-ai.svg`).
+바꾸고 싶으면 `_data/categories.yml` 의 `cover` 값을 고치면 됩니다.
+
+가로세로 비율은 **16:9** 로 맞추는 것이 좋습니다. 사진을 쓴다면
+`assets/images/` 에 올리고 `cover: /assets/images/파일이름.jpg` 로 지정하세요.
+
+### 본문 속 그림
 
 ```markdown
 ![설명](/assets/images/rack-diagram.png)
@@ -98,8 +115,8 @@ graph LR
 
 ## 9. 주제 추가·수정
 
-`_data/categories.yml` 을 고치면 홈과 글 목록에 바로 반영됩니다.
-색을 다르게 주고 싶으면 `assets/css/style.scss` 의 `.cat-...` 규칙에 한 줄 추가하면 됩니다.
+`_data/categories.yml` 한 파일만 고치면 홈의 필터, Categories 메뉴, 글 목록,
+배지 색까지 한꺼번에 반영됩니다. 항목 하나에 `key`, 이름, 설명, `color`, `cover` 를 적으면 됩니다.
 
 ## 10. 로컬에서 미리 보기 (선택)
 

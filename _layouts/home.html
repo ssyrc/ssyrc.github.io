@@ -4,37 +4,27 @@ layout: default
 {% assign lang = page.lang | default: site.lang %}
 {% assign t = site.data.ui[lang] %}
 {% assign posts = site.posts | where: "lang", lang %}
+{% if lang == 'en' %}{% assign archive_url = '/en/archive/' %}{% else %}{% assign archive_url = '/archive/' %}{% endif %}
 
-<section class="intro">
-  <h1 class="intro-title">{{ site.title }}</h1>
-  <p class="intro-tagline">{% if lang == 'en' %}{{ site.tagline_en }}{% else %}{{ site.tagline_ko }}{% endif %}</p>
-</section>
+<div class="wrap">
+  {% assign recent = posts | slice: 0, 3 %}
+  {% include hero.html posts=recent lang=lang %}
 
-<section class="topics">
-  <h2 class="section-title">{{ t.by_category }}</h2>
-  <div class="topic-grid">
-    {% for cat in site.data.categories %}
-    {% assign in_cat = posts | where: "category", cat.key %}
-    {% if lang == 'en' %}{% assign cat_url = '/en/archive/' %}{% else %}{% assign cat_url = '/archive/' %}{% endif %}
-    <a class="topic-card cat-{{ cat.key }}" href="{{ cat_url | relative_url }}#{{ cat.key }}">
-      <span class="topic-name">{{ cat[lang] }}</span>
-      <span class="topic-desc">{% if lang == 'en' %}{{ cat.desc_en }}{% else %}{{ cat.desc_ko }}{% endif %}</span>
-      <span class="topic-count">{{ in_cat.size }} {{ t.posts_count }}</span>
-    </a>
-    {% endfor %}
-  </div>
-</section>
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">{{ t.latest }}</h2>
+      {% include filters.html posts=posts lang=lang archive_url=archive_url %}
+    </div>
 
-<section class="recent">
-  <h2 class="section-title">{{ t.recent }}</h2>
-  {% assign recent = posts | slice: 0, 10 %}
-  {% include post-list.html posts=recent lang=lang %}
-  {% if posts.size > 10 %}
-  <p class="more-link">
-    {% if lang == 'en' %}<a href="{{ '/en/archive/' | relative_url }}">{{ t.all_posts }} &rarr;</a>
-    {% else %}<a href="{{ '/archive/' | relative_url }}">{{ t.all_posts }} &rarr;</a>{% endif %}
-  </p>
-  {% endif %}
-</section>
+    {% if posts.size > 0 %}
+    <div class="card-grid" data-grid>
+      {% for p in posts %}{% include post-card.html post=p lang=lang %}{% endfor %}
+    </div>
+    <p class="empty" data-empty hidden>{{ t.no_match }}</p>
+    {% else %}
+    <p class="empty">{{ t.no_posts }}</p>
+    {% endif %}
+  </section>
+</div>
 
 {{ content }}

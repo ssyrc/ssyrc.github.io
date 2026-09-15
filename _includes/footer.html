@@ -1,5 +1,17 @@
+{% assign lang = page.lang | default: site.lang %}
+{% assign t = site.data.ui[lang] %}
+{% if lang == 'en' %}
+  {% assign home_url = '/en/' %}{% assign archive_url = '/en/archive/' %}{% assign about_url = '/en/about/' %}
+{% else %}
+  {% assign home_url = '/' %}{% assign archive_url = '/archive/' %}{% assign about_url = '/about/' %}
+{% endif %}
 <footer class="site-footer">
-  <div class="wrap">
-    <p>&copy; {{ 'now' | date: "%Y" }} {{ site.author }}</p>
+  <div class="wrap footer-inner">
+    <p>&copy; {{ 'now' | date: "%Y" }} {{ site.author }} &middot; {{ site.title }}</p>
+    <nav class="footer-nav" aria-label="{{ t.nav_label }}">
+      <a href="{{ home_url | relative_url }}">{{ t.home }}</a>
+      <a href="{{ archive_url | relative_url }}">{{ t.archive }}</a>
+      <a href="{{ about_url | relative_url }}">{{ t.about }}</a>
+    </nav>
   </div>
 </footer>

@@ -1,0 +1,51 @@
+{% comment %}
+  최신 글 슬라이더. 5초마다 자동으로 넘어갑니다.
+  사용: {% include hero.html posts=recent lang=lang %}
+{% endcomment %}
+{% assign t = site.data.ui[include.lang] %}
+{% if include.posts.size > 0 %}
+<section class="hero" data-slider data-interval="5000" aria-roledescription="carousel" aria-label="{{ t.latest }}">
+  <div class="hero-track">
+    {% for p in include.posts %}
+    {% assign cat = site.data.categories | where: "key", p.category | first %}
+    {% if p.cover %}{% assign cover = p.cover %}
+    {% elsif cat.cover %}{% assign cover = cat.cover %}
+    {% else %}{% assign cover = '/assets/images/covers/topic-cs.svg' %}{% endif %}
+
+    <article class="hero-slide{% if forloop.first %} is-active{% endif %}"
+             style="--c: {{ cat.color | default: '#5B6CF9' }}"
+             data-slide="{{ forloop.index0 }}"
+             role="group"
+             aria-roledescription="slide"
+             aria-label="{{ forloop.index }} / {{ include.posts.size }}"
+             {% unless forloop.first %}aria-hidden="true"{% endunless %}>
+      <div class="hero-text">
+        <p class="hero-kicker"><span class="mark">{{ cat[include.lang] | default: site.title }}</span><span class="dot">.</span></p>
+        <p class="hero-meta">
+          <span>{{ site.author }}</span>
+          <span class="sep" aria-hidden="true"></span>
+          <time datetime="{{ p.date | date_to_xmlschema }}">{{ p.date | date: "%Y.%m.%d" }}</time>
+        </p>
+        <h2 class="hero-title"><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h2>
+        {% if p.excerpt %}
+        <p class="hero-excerpt">{{ p.excerpt | strip_html | normalize_whitespace }}</p>
+        {% endif %}
+        <a class="hero-cta" href="{{ p.url | relative_url }}" aria-label="{{ t.read_post }}: {{ p.title }}">&rarr;</a>
+      </div>
+      <div class="hero-media">
+        <img src="{{ cover | relative_url }}" alt="" width="1200" height="675"
+             {% unless forloop.first %}loading="lazy"{% endunless %} decoding="async">
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  {% if include.posts.size > 1 %}
+  <div class="hero-controls">
+    <button class="hero-btn" type="button" data-slider-prev aria-label="{{ t.prev_slide }}">&lsaquo;</button>
+    <span class="hero-count"><b data-slider-current>1</b> / {{ include.posts.size }}</span>
+    <button class="hero-btn" type="button" data-slider-next aria-label="{{ t.next_slide }}">&rsaquo;</button>
+  </div>
+  {% endif %}
+</section>
+{% endif %}

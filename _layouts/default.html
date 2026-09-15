@@ -6,10 +6,11 @@
 </head>
 <body>
   {% include header.html %}
-  <main class="wrap">
+  <main>
     {{ content }}
   </main>
   {% include footer.html %}
+  <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
   {% if page.mermaid %}{% include mermaid.html %}{% endif %}
   {% if page.math %}{% include katex.html %}{% endif %}
 </body>
