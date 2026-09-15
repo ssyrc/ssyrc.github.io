@@ -1,10 +1,10 @@
 # ---------------------------------------------------------------------------
 # 사이트 기본 정보 — 이 블록만 고쳐도 사이트 전체에 반영됩니다.
 # ---------------------------------------------------------------------------
-title: "Computing Architecture Notes"
-tagline_ko: "CS 기초부터 데이터센터 인프라까지, 공부한 것을 기록합니다."
-tagline_en: "Notes on computer science fundamentals and data center infrastructure."
-description: "CS fundamentals and data center infrastructure — servers, networking, power and cooling."
+title: "Data Center Deep Dive"
+tagline_ko: "Computing Architecture · Data Center · HPC · Server · Networking · AI/LLM"
+tagline_en: "Computing Architecture · Data Center · HPC · Server · Networking · AI/LLM"
+description: "Computing architecture, data centers, HPC, servers, networking, and AI/LLM infrastructure."
 author: "ssyrc"
 url: "https://ssyrc.github.io"
 baseurl: ""

@@ -198,6 +198,7 @@ a:hover { text-decoration: underline; }
 .cat-server        { --c-fg: #0f766e; --c-bg: #ecfdf5; --c-line: #d6f5e6; }
 .cat-network       { --c-fg: #1d5fa8; --c-bg: #eff6ff; --c-line: #dbeafe; }
 .cat-power-cooling { --c-fg: #b45309; --c-bg: #fff7ed; --c-line: #ffedd5; }
+.cat-ai-infra      { --c-fg: #7c3aed; --c-bg: #f5f3ff; --c-line: #e9e2ff; }
 .cat-til           { --c-fg: #9d266d; --c-bg: #fdf2f8; --c-line: #fce7f3; }
 
 @media (prefers-color-scheme: dark) {
@@ -205,6 +206,7 @@ a:hover { text-decoration: underline; }
   .cat-server        { --c-fg: #6ee7b7; --c-bg: #10241f; --c-line: #1b3a33; }
   .cat-network       { --c-fg: #7fc0f5; --c-bg: #13202f; --c-line: #1e3550; }
   .cat-power-cooling { --c-fg: #fbbf5c; --c-bg: #2a1e10; --c-line: #46331a; }
+  .cat-ai-infra      { --c-fg: #c4b5fd; --c-bg: #1f1830; --c-line: #33294d; }
   .cat-til           { --c-fg: #f0a2ce; --c-bg: #2b1424; --c-line: #48213a; }
 }
 

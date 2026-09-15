@@ -1,6 +1,6 @@
 # ssyrc.github.io
 
-CS 기초와 데이터센터 인프라를 정리하는 기술 블로그.
+Data Center Deep Dive — 컴퓨팅 아키텍처와 데이터센터 인프라를 정리하는 기술 블로그.
 → **https://ssyrc.github.io**
 
 Jekyll 로 만들고 GitHub Pages 가 `main` 브랜치를 그대로 빌드해 배포합니다.

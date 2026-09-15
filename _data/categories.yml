@@ -24,6 +24,12 @@
   desc_ko: "전력 분배, 발열과 냉각, PUE 같은 효율 지표."
   desc_en: "Power distribution, heat and cooling, efficiency metrics such as PUE."
 
+- key: ai-infra
+  ko: "AI·HPC 인프라"
+  en: "AI & HPC Infrastructure"
+  desc_ko: "GPU 클러스터, 학습·추론 워크로드, 인터커넥트."
+  desc_en: "GPU clusters, training and inference workloads, interconnects."
+
 - key: til
   ko: "TIL"
   en: "TIL"

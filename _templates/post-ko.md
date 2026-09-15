@@ -1,7 +1,7 @@
 ---
 title: "제목"
 date: 2026-01-01
-category: server          # cs / server / network / power-cooling / til
+category: server          # cs / server / network / power-cooling / ai-infra / til
 tags: [태그1, 태그2]
 ref:                      # 영어판을 같이 올릴 때만. 두 글에 같은 값을 넣으면 서로 링크됩니다.
 mermaid: false            # 다이어그램을 쓰면 true

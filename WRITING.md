@@ -38,7 +38,7 @@ tags: [rack, power]
 | --- | --- | --- |
 | `title` | ✅ | 글 제목 |
 | `date` | ✅ | `2026-09-15` 형식 |
-| `category` | 권장 | `cs` `server` `network` `power-cooling` `til` 중 하나 |
+| `category` | 권장 | `cs` `server` `network` `power-cooling` `ai-infra` `til` 중 하나 |
 | `tags` | | `[rack, power]` 처럼 목록으로 |
 | `ref` | | 한국어판·영어판을 잇는 열쇠말. 두 글에 같은 값을 넣으면 서로 링크됩니다 |
 | `mermaid` | | `true` 면 다이어그램 기능을 불러옵니다 |
