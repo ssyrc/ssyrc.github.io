@@ -10,7 +10,8 @@ url: "https://ssyrc.github.io"
 baseurl: ""
 lang: ko            # 기본 언어 (한국어 사이트가 루트 /)
 
-# 푸터·프로필에 걸리는 링크. 비워두면 표시되지 않습니다.
+# 지금은 화면에 링크로 표시되지 않습니다. 나중에 소개 페이지 등에
+# {{ site.github_username }} 형태로 불러 쓸 수 있게 값만 남겨둡니다.
 github_username: ssyrc
 email:
 
