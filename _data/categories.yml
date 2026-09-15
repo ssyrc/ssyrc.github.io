@@ -1,0 +1,31 @@
+# 글의 category 값과 여기 key 를 맞추면 목록·배지에 이름이 붙습니다.
+# 주제를 추가하고 싶으면 항목을 하나 더 넣기만 하면 됩니다.
+- key: cs
+  ko: "CS 기초"
+  en: "CS Fundamentals"
+  desc_ko: "운영체제, 네트워크 이론, 컴퓨터 구조 같은 바탕이 되는 개념."
+  desc_en: "Operating systems, networking theory, computer architecture."
+
+- key: server
+  ko: "서버 구조"
+  en: "Server Architecture"
+  desc_ko: "CPU·메모리·스토리지, 랙과 섀시, 서버 한 대가 만들어지는 방식."
+  desc_en: "CPU, memory, storage, racks and chassis — how a machine is put together."
+
+- key: network
+  ko: "네트워크"
+  en: "Networking"
+  desc_ko: "데이터센터 토폴로지, 스위칭, 트래픽 흐름."
+  desc_en: "Data center topology, switching, traffic flow."
+
+- key: power-cooling
+  ko: "전력·냉각"
+  en: "Power & Cooling"
+  desc_ko: "전력 분배, 발열과 냉각, PUE 같은 효율 지표."
+  desc_en: "Power distribution, heat and cooling, efficiency metrics such as PUE."
+
+- key: til
+  ko: "TIL"
+  en: "TIL"
+  desc_ko: "오늘 배운 것 — 15분짜리 짧은 메모."
+  desc_en: "Today I learned — short notes, fifteen minutes at a time."

@@ -1,0 +1,22 @@
+# 글을 올릴 때 사이트가 실제로 빌드되는지 먼저 확인합니다.
+# (배포는 GitHub Pages 가 따로 합니다. 이 워크플로는 검사만 합니다.)
+name: Build check
+
+on:
+  push:
+    branches-ignore: []
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site

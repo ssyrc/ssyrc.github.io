@@ -1,0 +1,14 @@
+{% assign lang = page.lang | default: site.lang %}
+{% assign t = site.data.ui[lang] %}
+{% if lang == 'en' %}{% assign home_url = '/en/' %}{% assign archive_url = '/en/archive/' %}{% assign about_url = '/en/about/' %}
+{% else %}{% assign home_url = '/' %}{% assign archive_url = '/archive/' %}{% assign about_url = '/about/' %}{% endif %}
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="site-title" href="{{ home_url | relative_url }}">{{ site.title }}</a>
+    <nav class="site-nav">
+      <a href="{{ archive_url | relative_url }}">{{ t.archive }}</a>
+      <a href="{{ about_url | relative_url }}">{{ t.about }}</a>
+      <a class="lang-switch" href="{{ t.other_lang_home | relative_url }}">{{ t.other_lang }}</a>
+    </nav>
+  </div>
+</header>

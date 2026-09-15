@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% assign lang = page.lang | default: site.lang %}
+<html lang="{{ lang }}">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  {% include header.html %}
+  <main class="wrap">
+    {{ content }}
+  </main>
+  {% include footer.html %}
+  {% if page.mermaid %}{% include mermaid.html %}{% endif %}
+  {% if page.math %}{% include katex.html %}{% endif %}
+</body>
+</html>

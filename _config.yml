@@ -1,0 +1,73 @@
+# ---------------------------------------------------------------------------
+# 사이트 기본 정보 — 이 블록만 고쳐도 사이트 전체에 반영됩니다.
+# ---------------------------------------------------------------------------
+title: "Computing Architecture Notes"
+tagline_ko: "CS 기초부터 데이터센터 인프라까지, 공부한 것을 기록합니다."
+tagline_en: "Notes on computer science fundamentals and data center infrastructure."
+description: "CS fundamentals and data center infrastructure — servers, networking, power and cooling."
+author: "ssyrc"
+url: "https://ssyrc.github.io"
+baseurl: ""
+lang: ko            # 기본 언어 (한국어 사이트가 루트 /)
+
+# 푸터·프로필에 걸리는 링크. 비워두면 표시되지 않습니다.
+github_username: ssyrc
+email:
+
+# ---------------------------------------------------------------------------
+# 빌드 설정 — 바꿀 일이 거의 없습니다.
+# ---------------------------------------------------------------------------
+markdown: kramdown
+highlighter: rouge
+permalink: /:year/:month/:day/:title/
+timezone: Asia/Seoul
+excerpt_separator: "<!--more-->"
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+feed:
+  path: feed.xml
+
+sass:
+  style: compressed
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - WRITING.md
+  - vendor
+  - .github
+  - _templates
+
+# ---------------------------------------------------------------------------
+# 글 기본값 — _posts/ko 아래 글은 한국어, _posts/en 아래 글은 영어로 자동 분류.
+# ---------------------------------------------------------------------------
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: "_posts/ko"
+      type: posts
+    values:
+      lang: ko
+      permalink: /ko/:year/:month/:day/:title/
+  - scope:
+      path: "_posts/en"
+      type: posts
+    values:
+      lang: en
+      permalink: /en/:year/:month/:day/:title/

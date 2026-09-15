@@ -1,0 +1,18 @@
+{% comment %} 다이어그램: 글 앞머리에 mermaid: true 를 넣은 글에서만 불러옵니다. {% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  (function () {
+    // CDN 이 막혀 있거나 실패하면 코드블록을 그대로 두고 조용히 빠진다.
+    if (typeof mermaid === 'undefined') { return; }
+    var blocks = document.querySelectorAll('pre > code.language-mermaid');
+    for (var i = 0; i < blocks.length; i++) {
+      var pre = blocks[i].parentNode;
+      var holder = document.createElement('div');
+      holder.className = 'mermaid';
+      holder.textContent = blocks[i].textContent;
+      pre.parentNode.replaceChild(holder, pre);
+    }
+    var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'default', fontFamily: 'inherit' });
+  })();
+</script>
