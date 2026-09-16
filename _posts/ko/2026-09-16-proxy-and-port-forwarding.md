@@ -1,5 +1,6 @@
 ---
 title: "프록시와 포트 포워딩, 무엇이 다를까요?"
+date: 2026-09-16
 category: server-network
 tags: [proxy, port-forwarding, ssh, socks, nginx]
 cover: /assets/images/covers/proxy.svg
