@@ -75,18 +75,22 @@ flowchart LR
         C["client"]
     end
     subgraph SRV["server side"]
-        F["firewall<br/><small>8000 &rarr; internal IP:8100</small><br/><small>* set by the network admin</small>"] --> S["server<br/><small>internal IP:8100</small>"]
+        F["firewall<br/><small>8000 &rarr; internal IP:8100</small>"] --> S["server<br/><small>internal IP:8100</small>"]
+        NOTE["<small>* set by the network admin</small>"]
     end
     C --> F
+    C ~~~ NOTE
     class C client
     class F kernel
     class S server
+    class NOTE note
     class LOCAL,SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
+    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 클라이언트가 할 일은 없습니다. 그냥 공인 주소로 접속할 뿐이고, 자기 패킷이 도중에
@@ -121,7 +125,8 @@ SSH 서버를 거쳐 목적지로 나갑니다.
 ```mermaid
 flowchart LR
     subgraph LOCAL["your machine"]
-        C["client<br/><small>* you point the app here</small>"] --> P["SOCKS proxy<br/><small>localhost:9999</small><br/><small>* ssh -D 9999</small>"]
+        C["client"] --> P["SOCKS proxy<br/><small>localhost:9999</small>"]
+        NOTE["<small>* set by client &mdash; ssh -D 9999</small>"]
     end
     subgraph SRV["server side"]
         H["SSH server"] --> A["remote server A"]
@@ -129,15 +134,18 @@ flowchart LR
         H --> D["remote server C"]
     end
     P --> H
+    C ~~~ NOTE
     class C client
     class P,H proxy
     class A,B,D server
+    class NOTE note
     class LOCAL,SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
+    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 여기서 짚을 점이 세 개 있습니다.
@@ -158,6 +166,49 @@ SSH 서버 입장에서 특별히 해둘 설정이 없고, SSH가 떠 있기만 
 ※ `-L`(local)과 `-R`(remote) 포워딩은 명령을 칠 때 목적지를 함께 적어야 합니다. 그래서 이 둘은 이름 그대로 목적지가 고정된 포트 포워딩이고, `-D`만 프록시가 됩니다.
 {: .note}
 
+### 그럼 포트 포워딩인가요, forward proxy인가요?
+
+둘 다 맞습니다. 그래서 헷갈리는 거고요.
+
+**이름은 포트 포워딩이 맞습니다.** OpenSSH 가 `-L`(local), `-R`(remote), `-D`(dynamic)
+세 가지를 모두 port forwarding 이라고 부릅니다. SSH 터널이 TCP 연결을 대신 실어
+나른다는 공통점 때문이죠.
+
+**그런데 `-D` 가 실제로 만들어내는 것은 forward proxy 입니다.** 내 컴퓨터에 뜨는
+그 SOCKS 프록시가 바로 그것입니다. `-L` 과 `-R` 은 명령을 칠 때 목적지를 함께 적으니
+이름 그대로 고정된 포워딩이 맞고, **`-D` 만 이름과 실체가 어긋납니다.**
+
+그러니 이렇게 정리하면 편합니다. **터널을 만드는 방식은 포트 포워딩, 그 결과로 생긴
+물건은 forward proxy.**
+
+### forward proxy 가 뭔가요?
+
+**클라이언트가 그 존재를 알고, 직접 지정해서 쓰는 중개자**입니다.
+판별 기준은 위치가 아니라 이 두 가지예요.
+
+- **클라이언트가 아는가?** → 압니다. 자기 손으로 주소를 적어 넣었으니까요.
+- **누구를 대신하는가?** → 클라이언트를 대신해 목적지에 연결합니다.
+
+`ssh -D` 의 SOCKS 프록시 말고도 이런 것들이 forward proxy 입니다.
+
+- 회사나 학교 망의 HTTP 프록시 — 브라우저에 주소를 넣어두면 모든 요청이 그리로 갑니다
+- Charles, mitmproxy 처럼 내 트래픽을 들여다보려고 중간에 세우는 도구
+- 사내망 안쪽으로 들어가기 위한 점프 서버의 SOCKS
+
+reverse proxy 와는 이렇게 갈립니다.
+
+| | forward proxy | reverse proxy |
+| --- | --- | --- |
+| 누구 편에 서나 | 클라이언트 | 서버 |
+| 누가 세우나 | 사용자 본인 | 서버 운영자 |
+| 클라이언트가 아는가 | 안다 (직접 지정) | 모른다 |
+| 무엇을 고르나 | 어느 서버로 나갈지 | 어느 뒤쪽 서버로 넘길지 |
+| 예 | `ssh -D` 의 SOCKS, 사내 HTTP 프록시 | nginx `proxy_pass`, 로드밸런서 |
+
+앞의 그림을 다시 보시면 차이가 눈에 들어옵니다. **SOCKS 프록시는 `your machine`
+안에** 있었고, 곧 나올 **nginx 는 `server side` 안에** 있습니다. 같은 "프록시"라는
+말을 쓰지만 서 있는 편이 정반대인 거죠.
+
 ## 3. Reverse proxy
 
 이번엔 방향이 반대입니다. **서버 쪽에** 중개자를 세워볼까요?
@@ -168,18 +219,22 @@ flowchart LR
         C["client"]
     end
     subgraph SRV["server side"]
-        N["nginx<br/><small>proxy_pass</small><br/><small>* set by the server operator</small>"] --> R["remote server<br/><small>Remote_IP:8100</small>"]
+        N["nginx<br/><small>proxy_pass</small>"] --> R["remote server<br/><small>Remote_IP:8100</small>"]
+        NOTE["<small>* set by the server operator</small>"]
     end
     C --> N
+    C ~~~ NOTE
     class C client
     class N proxy
     class R server
+    class NOTE note
     class LOCAL,SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
+    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 클라이언트는 그냥 주소 하나로 접속할 뿐, 요청이 뒤에서 어떤 식으로 전달되는지

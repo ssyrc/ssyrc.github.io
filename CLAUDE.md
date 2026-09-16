@@ -88,19 +88,33 @@ class SRV zone
 ⚠️ subgraph 에 **바깥 노드와 이어지는 선이 있으면 Mermaid 가 `direction` 을 무시합니다.**
 안쪽 방향을 바꾸려 하지 말고, 바깥 `flowchart` 방향에 맞춰 쓰세요.
 
-### 누가 설정하는가 — 그 상자 안 마지막 줄
+### 누가 설정하는가 — 상자 **밖** 바로 아래에
 
-**설정 설명 때문에 상자나 텍스트 노드를 따로 만들지 마세요.** 그 설정이 붙는 상자의
-**마지막 `<small>` 줄**로 넣습니다. 연결 없는 노드를 두면 레이아웃 엔진이 엉뚱한 곳에
-놓고, 점선 묶음만 커집니다.
+설정 주체는 **상자 안이 아니라 상자 밖 바로 아래**에 적습니다.
+테두리 없는 텍스트 노드를 만들고, **설정 대상 상자와 같은 단(rank)에 강제로 놓습니다.**
 
 ```
-F["firewall<br/><small>8000 &rarr; internal IP:8100</small><br/><small>* set by the network admin</small>"]
+subgraph SRV["server side"]
+    F["firewall<br/><small>8000 &rarr; internal IP:8100</small>"] --> S["server"]
+    NOTE["<small>* set by the network admin</small>"]
+end
+C --> F
+C ~~~ NOTE        ← 이 줄이 핵심
+class NOTE note
+classDef note fill:none,stroke:none,color:#64748b
 ```
 
-- 한 줄로 짧게. `* set by the network admin`, `* set by the server operator`, `* ssh -D 9999`
-- **주석 줄이 그 상자에서 가장 긴 줄이 되지 않게** 하세요. 가장 길면 글씨가 상자 밖으로
-  삐져나올 수 있습니다.
+`C ~~~ NOTE` 로 **F 와 같은 단**에 놓이게 하는 것이 요령입니다.
+`flowchart LR` 에서 같은 단은 같은 세로줄이므로, NOTE 가 F 바로 아래에 붙습니다.
+아무 데도 잇지 않으면 레이아웃 엔진이 엉뚱한 곳에 놓고 점선 묶음만 커집니다.
+`F ~~~ NOTE` 로 이으면 F 의 **오른쪽**으로 갑니다. 틀립니다.
+
+- **다이어그램당 주석은 하나**로. 둘 이상이면 단 안의 위아래 순서를 제어할 수 없어
+  위에 붙었다 아래에 붙었다 합니다.
+- 문구는 한 줄로. `* set by the network admin`, `* set by client — ssh -D 9999`,
+  `* set by the server operator`
+- ⚠️ **반드시 `<small>` 로 감쌉니다.** 라벨이 `*` 로 시작하면 Mermaid 가 마크다운 목록으로
+  읽어 `Unsupported markdown: list` 가 찍힙니다.
 
 ### legend 는 쓰지 않습니다
 
@@ -128,8 +142,9 @@ F["firewall<br/><small>8000 &rarr; internal IP:8100</small><br/><small>* set by 
 - `<small>` 크기 규칙은 **전역**(`small { ... }`)으로 둬야 합니다. Mermaid 는 글자 폭을
   `.mermaid` 바깥의 임시 요소에서 재기 때문에, 선택자를 `.mermaid small` 로 좁히면
   잰 폭과 실제 폭이 달라져 글씨가 상자를 넘습니다.
-- 글꼴이 내려오기 전에 그리면 같은 이유로 폭이 어긋납니다. `document.fonts.ready` 를
-  기다린 뒤 `mermaid.run()` 을 부릅니다.
+- 글꼴이 내려오기 전에 그리면 같은 이유로 폭이 어긋납니다. **`document.fonts.ready` 만으로는
+  부족합니다.** 아직 그 글꼴을 쓰는 요소가 없으면 받을 것이 없다고 보고 즉시 끝나버립니다.
+  `document.fonts.load('400 16px Gaegu')` 로 명시적으로 불러온 뒤 `mermaid.run()` 을 부릅니다.
 
 ### 그릴 때 지킬 것
 

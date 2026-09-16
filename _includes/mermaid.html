@@ -37,7 +37,7 @@
         primaryBorderColor: '#64748b',
         primaryTextColor: '#334155'
       },
-      flowchart: { htmlLabels: true, padding: 14, nodeSpacing: 50, rankSpacing: 60 }
+      flowchart: { htmlLabels: true, padding: 12, nodeSpacing: 30, rankSpacing: 52 }
     });
 
     // mermaid 가 SVG 에 박아두는 inline max-width 를 지워서, 판 폭에 맞춰 줄어들게 한다.
@@ -51,9 +51,14 @@
     }
 
     // 손글씨 글꼴이 내려오기 전에 그리면, mermaid 가 다른 글꼴로 글자 폭을 재서
-    // 글씨가 상자 밖으로 삐져나온다. 글꼴을 기다린 뒤에 그린다.
-    var fontsReady = (document.fonts && document.fonts.ready)
-      ? document.fonts.ready.catch(function () {})
+    // 글씨가 상자 밖으로 삐져나온다.
+    // document.fonts.ready 만으로는 부족하다. 아직 이 글꼴을 쓰는 요소가 없으면
+    // 받을 것이 없다고 보고 곧바로 끝나버린다. 그래서 명시적으로 불러온다.
+    var fontsReady = (document.fonts && document.fonts.load)
+      ? Promise.all([
+          document.fonts.load('400 16px Gaegu'),
+          document.fonts.load('400 13px Gaegu')
+        ]).catch(function () {})
       : Promise.resolve();
 
     fontsReady
