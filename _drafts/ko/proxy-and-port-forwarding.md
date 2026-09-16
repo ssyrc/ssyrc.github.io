@@ -40,8 +40,8 @@ mermaid: true
 
 ```mermaid
 flowchart LR
-    C["client<br/><small>공인 IP:8000 으로 보냄</small>"] --> F["방화벽 · 공유기가<br/>목적지 주소를 바꿈<br/><small>8000 &rarr; 내부 IP:8100</small>"]
-    F --> S["server<br/><small>내부 IP:8100 에서 대기</small>"]
+    C["client<br/><small>sends to public IP:8000</small>"] --> F["firewall rewrites<br/>the destination address<br/><small>8000 &rarr; internal IP:8100</small>"]
+    F --> S["server<br/><small>listens on internal IP:8100</small>"]
     class C client
     class F kernel
     class S server
@@ -72,11 +72,11 @@ SSH 서버를 거쳐 목적지로 나갑니다.
 
 ```mermaid
 flowchart LR
-    C["client<br/><small>프록시로 localhost:9999 지정</small>"] --> P["SOCKS proxy<br/><small>listens on localhost:9999</small>"]
-    P --> H["SSH Server<br/><small>목적지 규칙 없음</small>"]
-    H --> A["Remote A"]
-    H --> B["Remote B"]
-    H --> D["Remote C"]
+    C["client<br/><small>proxy set to localhost:9999</small>"] --> P["SOCKS proxy<br/><small>listens on localhost:9999</small>"]
+    P --> H["SSH server<br/><small>no fixed destination</small>"]
+    H --> A["remote server A"]
+    H --> B["remote server B"]
+    H --> D["remote server C"]
     class C client
     class P proxy
     class H proxy
@@ -111,7 +111,7 @@ SSH 서버 입장에서 특별히 해둘 설정이 없고, SSH가 떠 있기만 
 
 ```mermaid
 flowchart LR
-    C["client<br/><small>my-url 로 접속</small>"] --> N["nginx<br/><small>proxy_pass 규칙대로 전달</small>"]
+    C["client<br/><small>requests my-url</small>"] --> N["nginx<br/><small>routes by proxy_pass rules</small>"]
     N --> R["remote server<br/><small>listens on Remote_IP:8100</small>"]
     class C client
     class N proxy

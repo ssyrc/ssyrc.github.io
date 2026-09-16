@@ -22,10 +22,10 @@ mermaid: true
 
 ```mermaid
 flowchart TD
-    A["칩<br/><small>CPU 코어 + 캐시</small>"] --> B["서버 한 대<br/><small>메모리, NIC, 로컬 디스크</small>"]
-    B --> C["랙<br/><small>20~40대 + ToR 스위치</small>"]
-    C --> D["행 · 구역<br/><small>스파인 스위치로 묶인 랙들</small>"]
-    D --> E["데이터센터<br/><small>전력, 냉각, 네트워크 전체</small>"]
+    A["chip<br/><small>CPU cores + cache</small>"] --> B["one server<br/><small>memory, NIC, local disk</small>"]
+    B --> C["rack<br/><small>20-40 machines + ToR switch</small>"]
+    C --> D["row<br/><small>racks joined by spine switches</small>"]
+    D --> E["data center<br/><small>power, cooling, the whole network</small>"]
 ```
 
 이 계층을 따라 내려가면서 매번 같은 질문을 던지게 됩니다.

@@ -65,8 +65,8 @@ tags: [rack, power]
 ````
 ```mermaid
 flowchart LR
-    C["client<br/><small>127.0.0.1:8080 으로 보냄</small>"] --> P["proxy<br/><small>127.0.0.1:8080 에서 대기</small>"]
-    P --> S["server<br/><small>172.17.0.3:80 에서 대기</small>"]
+    C["client<br/><small>sends data to 127.0.0.1:8080</small>"] --> P["proxy<br/><small>listens on 127.0.0.1:8080</small>"]
+    P --> S["server<br/><small>listens on 172.17.0.3:80</small>"]
     class C client
     class P proxy
     class S server
@@ -77,6 +77,8 @@ flowchart LR
 ```
 ````
 
+- **다이어그램 안의 글자는 전부 영어로 씁니다.** 본문이 한국어여도 그림만은 영어입니다.
+  `client` / `listens on 127.0.0.1:8080` 처럼, 영어로 읽어서 자연스러운 짧은 구로.
 - 박스 이름은 짧게, 주소나 포트 같은 설명은 `<br/><small>...</small>` 로 아래에 작게.
 - **라벨 안에 `http://` 를 쓰지 마세요.** 마크다운 링크로 잘못 읽혀 글자가 깨집니다. `my-url` 처럼 씁니다.
 - 반듯한 기본 모양으로 그리고 싶은 글은 앞머리에 `diagram_look: classic` 을 넣으면 됩니다.

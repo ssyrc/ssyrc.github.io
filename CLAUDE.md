@@ -38,6 +38,25 @@ flowchart LR
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
 ```
 
+### 다이어그램 안의 글자는 영어로
+
+**박스 이름, 설명, 화살표 라벨 — 다이어그램에 들어가는 글자는 전부 영어로 씁니다.**
+본문이 한국어여도 그림만은 영어입니다.
+
+- 한국어를 그대로 옮긴 어색한 영어가 되지 않게, **영어로 읽어서 자연스러운 표현**을 씁니다.
+  참고한 원본 그림의 말투가 기준입니다:
+  `sends data to 127.0.0.1:8080`, `listens on 172.17.0.3:80`,
+  `kernel rewrites packets' destination address with 172.17.0.3:80`
+- 박스 이름은 **소문자 한두 단어**가 기본 (`client`, `proxy`, `server`, `nginx`, `one server`).
+  고유명사와 약어는 그대로 (`SOCKS proxy`, `SSH server`, `ToR switch`, `NIC`).
+- 설명은 **동사로 시작하는 짧은 구**로 (`listens on ...`, `sends to ...`, `routes by ...`,
+  `rewrites ... with ...`). 마침표로 끝내지 않습니다.
+- 그림에 긴 설명을 욱여넣지 마세요. 그림은 뼈대만 보여주고,
+  자세한 설명은 본문(한국어)에서 풉니다.
+
+나쁜 예: `["방화벽 · 공유기가 목적지 주소를 바꿈"]`
+좋은 예: `["firewall rewrites<br/>the destination address"]`
+
 ### 그릴 때 지킬 것
 
 - `flowchart LR` 을 기본으로 쓰되 **박스는 4개까지**. 그보다 길어지면 `TD` 로 세로로 세웁니다.
