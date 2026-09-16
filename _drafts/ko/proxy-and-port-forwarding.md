@@ -23,6 +23,37 @@ mermaid: true
 받고, 자기가 새로 연결을 열어 목적지에 붙습니다. 대신 맺어주는 쪽이니
 목적지가 요청마다 달라질 수 있고, 규약에 따라 내용을 들여다볼 수도 있습니다.
 
+그림으로 놓고 보면 중개하는 방식부터 다릅니다.
+
+```mermaid
+flowchart TB
+    subgraph PF["port forwarding"]
+        direction LR
+        C1["client"] --> K1["fixed rule<br/><small>public IP:8000 &rarr; internal IP:8100</small>"]
+        K1 --> S1["server<br/><small>always the same one</small>"]
+    end
+    subgraph PX["proxy"]
+        direction LR
+        C2["client"] -->|"connection 1"| P2["proxy<br/><small>ends one, dials another</small>"]
+        P2 -->|"connection 2"| S2["server<br/><small>picked per request</small>"]
+    end
+    PF ~~~ PX
+    class C1,C2 client
+    class K1 kernel
+    class P2 proxy
+    class S1,S2 server
+    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
+    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
+    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
+    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
+    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
+```
+
+위쪽은 연결이 **하나**입니다. 클라이언트가 연 연결이 목적지 주소만 바뀐 채
+그대로 서버까지 갑니다. 아래쪽은 연결이 **둘**이고요. 프록시가 클라이언트의 연결을
+자기가 받아 끝내고, 목적지로는 새 연결을 따로 엽니다. 이 한 번 끊고 다시 잇는
+동작 덕분에 프록시는 어디로 보낼지 그때그때 고를 수 있습니다.
+
 정리하면 이렇게 갈립니다.
 
 - 포트 포워딩 — 목적지가 **규칙을 등록하는 시점에** 정해집니다. 하나로 고정!
@@ -33,6 +64,27 @@ mermaid: true
 
 ## 2. 포트 포워딩
 
+시나리오를 하나씩 보기 전에, 앞으로 나올 그림의 약속을 먼저 정리하겠습니다.
+
+```mermaid
+flowchart LR
+    L1["client<br/><small>makes the request</small>"] ~~~ L2["intermediary<br/><small>connects for you</small>"] ~~~ L3["destination<br/><small>server</small>"] ~~~ L4["kernel<br/><small>rewrites packets</small>"]
+    class L1 client
+    class L2 proxy
+    class L3 server
+    class L4 kernel
+    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
+    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
+    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
+    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
+```
+
+여기에 두 가지 표시가 더 붙습니다.
+
+- **점선 사각형** — 서로 다른 망을 묶은 것입니다. 상자 위에 적힌 이름이 그 망입니다.
+- **`*` 로 시작하는 줄** — 그 상자를 **누가 어디서 설정하는지**입니다.
+{: .note}
+
 ### NAT 포트 포워딩
 
 가장 기본이 되는 형태. 클라이언트는 공인 주소의 특정 포트로 접속하고,
@@ -40,15 +92,21 @@ mermaid: true
 
 ```mermaid
 flowchart LR
-    C["client<br/><small>sends to public IP:8000</small>"] --> F["firewall rewrites<br/>the destination address<br/><small>8000 &rarr; internal IP:8100</small>"]
-    F --> S["server<br/><small>listens on internal IP:8100</small>"]
+    C["client<br/><small>sends to public IP:8000</small>"]
+    C --> F["firewall rewrites<br/>the destination address<br/><small>8000 &rarr; internal IP:8100</small><br/><small>* set by the network admin,<br/>in the router or firewall</small>"]
+    subgraph INT["internal network"]
+        S["server<br/><small>listens on internal IP:8100</small>"]
+    end
+    F --> S
     class C client
     class F kernel
     class S server
+    class INT zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
+    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
 ```
 
 클라이언트가 할 일은 없습니다. 그냥 공인 주소로 접속할 뿐이고, 자기 패킷이 도중에
@@ -70,21 +128,44 @@ ssh -D 9999 user@ssh-server
 설정에 `localhost:9999`를 적어주면, 그때부터 그 앱의 트래픽은 SSH 터널을 타고
 SSH 서버를 거쳐 목적지로 나갑니다.
 
+그럼 그 "프록시 설정"은 어디에 적어주면 될까요?
+
+- **Firefox** — 설정 → 네트워크 설정 → **수동 프록시 설정** → SOCKS 호스트에 `localhost`, 포트에 `9999`, **SOCKS v5** 선택. 브라우저 자체 설정이라 파이어폭스만 터널을 탑니다.
+- **Chrome** — 프록시 설정 화면이 따로 없고 운영체제 설정을 그대로 따릅니다. 크롬만 따로 태우려면 실행 옵션을 주세요. `chrome --proxy-server="socks5://localhost:9999"`
+- **MobaXterm** — Tools → MobaSSHTunnel → New SSH tunnel → **Dynamic port forwarding (SOCKS proxy)** 선택 → 로컬 포트 `9999`와 SSH 서버 정보를 넣고 Start. `ssh -D` 를 창으로 하는 것과 같습니다.
+{: .note}
+
+※ Firefox 에는 "SOCKS v5 사용 시 DNS도 프록시 사용" 체크박스가 있습니다. 이걸 켜야 주소를 찾는 것까지 터널을 탑니다. 안 켜면 내 컴퓨터에서 DNS를 물어보게 되어, 내부망 주소가 안 풀리거나 어디에 접속하려 했는지가 밖으로 드러납니다.
+{: .note}
+
 ```mermaid
 flowchart LR
-    C["client<br/><small>proxy set to localhost:9999</small>"] --> P["SOCKS proxy<br/><small>listens on localhost:9999</small>"]
-    P --> H["SSH server<br/><small>no fixed destination</small>"]
-    H --> A["remote server A"]
-    H --> B["remote server B"]
-    H --> D["remote server C"]
+    subgraph LOCAL["your machine"]
+        direction TB
+        C["client<br/><small>proxy set to localhost:9999</small><br/><small>* you set this</small>"]
+        P["SOCKS proxy<br/><small>listens on localhost:9999</small><br/><small>* created by ssh -D 9999</small>"]
+    end
+    subgraph REMOTE["remote network"]
+        direction TB
+        A["remote A"]
+        B["remote B"]
+        D["remote C"]
+    end
+    C --> P
+    P --> H["SSH server<br/><small>no fixed target</small>"]
+    H --> A
+    H --> B
+    H --> D
     class C client
     class P proxy
     class H proxy
     class A,B,D server
+    class LOCAL,REMOTE zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
+    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
 ```
 
 여기서 짚을 점이 세 개 있습니다.
@@ -111,15 +192,23 @@ SSH 서버 입장에서 특별히 해둘 설정이 없고, SSH가 떠 있기만 
 
 ```mermaid
 flowchart LR
-    C["client<br/><small>requests my-url</small>"] --> N["nginx<br/><small>routes by proxy_pass rules</small>"]
-    N --> R["remote server<br/><small>listens on Remote_IP:8100</small>"]
+    C["client<br/><small>requests my-url</small>"]
+    subgraph SRV["server side"]
+        direction TB
+        N["nginx<br/><small>routes by proxy_pass rules</small><br/><small>* set by the server operator,<br/>in nginx.conf</small>"]
+        R["remote server<br/><small>listens on Remote_IP:8100</small>"]
+    end
+    C --> N
+    N --> R
     class C client
     class N proxy
     class R server
+    class SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
+    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
 ```
 
 클라이언트는 그냥 주소 하나로 접속할 뿐, 요청이 뒤에서 어떤 식으로 전달되는지
@@ -150,9 +239,9 @@ HTTP 요청을 이해하고 중개하기 때문입니다.
 | 다루는 층 | 패킷 주소 | TCP 연결 중개 | HTTP 등 애플리케이션 |
 | 목적지 결정 시점 | 규칙 등록 시 고정 | 연결할 때마다 | 프록시 규칙대로 |
 | 설정하는 사람 | 방화벽·공유기 관리자 | 사용자 본인 | 서버 운영자 |
+| 설정하는 곳 | 공유기·방화벽 설정 화면 | `ssh -D` + 앱의 프록시 설정 | `nginx.conf` |
 | 클라이언트가 아는가 | 모름 | 앎 (직접 지정) | 모름 |
 | 누구를 대신하나 | 대신하지 않음 | 클라이언트 | 서버 |
-| 예 | 공유기 포트 포워딩 | `ssh -D 9999` | nginx `proxy_pass` |
 
 세 가지를 한 줄로 줄이면 이렇게 됩니다.
 

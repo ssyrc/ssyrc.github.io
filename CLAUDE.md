@@ -24,6 +24,7 @@ Mermaid 11 의 `look: handDrawn` 을 쓰며, 설정은 `_includes/mermaid.html` 
 | `proxy` | 빨강 | 사용자 공간에서 연결을 대신 맺어주는 중개자 |
 | `server` | 파랑 | 최종 목적지 |
 | `kernel` | 빨간 점선 | 커널이 패킷을 고쳐 보내는 구간 (프로세스가 아님) |
+| `zone` | 회색 점선 묶음 | 서로 다른 망을 묶는 `subgraph` (내 컴퓨터, 원격 망 등) |
 
 ```mermaid
 flowchart LR
@@ -36,6 +37,7 @@ flowchart LR
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
+    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
 ```
 
 ### 다이어그램 안의 글자는 영어로
@@ -56,6 +58,58 @@ flowchart LR
 
 나쁜 예: `["방화벽 · 공유기가 목적지 주소를 바꿈"]`
 좋은 예: `["firewall rewrites<br/>the destination address"]`
+
+### 누가 설정하는가 — 상자 안에 `*` 한 줄
+
+**설정 정보를 적겠다고 상자를 새로 만들지 마세요.** 그 설정이 붙는 상자 안에,
+맨 아랫줄로 `*` 로 시작하는 작은 줄을 하나 넣습니다.
+
+```
+N["nginx<br/><small>routes by proxy_pass rules</small><br/><small>* set by the server operator,<br/>in nginx.conf</small>"]
+```
+
+- **누가** 그리고 **어디에** 적는지를 한 줄로. `* set by the network admin, in the router`,
+  `* you set this`, `* created by ssh -D 9999`
+- 길어지면 `<br/>` 로 두 줄까지만.
+
+### 망은 점선 사각형으로 묶기
+
+서로 다른 망(내 컴퓨터, 내부망, 원격 망)은 `subgraph` 로 묶고 `zone` 클래스를 줍니다.
+망 이름은 subgraph 제목으로 들어가고, Mermaid 가 상자 위쪽에 그립니다.
+
+```
+subgraph LOCAL["your machine"]
+    direction TB
+    C["client"]
+    P["SOCKS proxy"]
+end
+class LOCAL zone
+```
+
+- 제목은 **한 줄로 짧게**. 길면 줄바꿈되어 상자에 가려 잘립니다.
+- 안쪽을 세로로 쌓으려면 `direction TB` 를 넣습니다. 그래야 그림이 옆으로 안 퍼집니다.
+
+### legend
+
+여러 시나리오가 이어지는 글이면, **첫 시나리오 앞에 legend 다이어그램을 한 번** 둡니다.
+상자 색이 무엇을 뜻하는지만 보여주고, 점선 묶음과 `*` 의 뜻은 바로 아래 한국어로 적습니다.
+
+```
+flowchart LR
+    L1["client<br/><small>makes the request</small>"] ~~~ L2["intermediary<br/><small>connects for you</small>"] ~~~ L3["destination<br/><small>server</small>"] ~~~ L4["kernel<br/><small>rewrites packets</small>"]
+```
+
+`~~~` 는 보이지 않는 선입니다. 이걸로 이어야 가로로 놓입니다. 안 그러면 세로로 쌓입니다.
+
+### 두 방식을 나란히 비교할 때
+
+`subgraph` 두 개를 만들고 `PF ~~~ PX` 로 **위아래로 쌓습니다.**
+그냥 두면 좌우로 놓여 폭이 터집니다.
+
+### 폭 맞추기
+
+다이어그램 판은 1040px 입니다. **그림이 1000px 를 넘으면 가로 스크롤이 생기니**,
+넘으면 라벨 문구를 줄이세요. 줄일 수 없으면 `TD` 로 세웁니다.
 
 ### 그릴 때 지킬 것
 

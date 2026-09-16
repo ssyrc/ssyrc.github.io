@@ -451,6 +451,8 @@ button { font: inherit; color: inherit; }
   color: var(--ink-3);
 }
 .prose .note strong { color: var(--ink-2); }
+.prose ul.note, .prose ol.note { padding-left: 2.1rem; }
+.prose ul.note li, .prose ol.note li { margin-bottom: .45rem; }
 .prose .note code { font-size: 0.85em; }
 
 /* 다이어그램은 라이트/다크 어느 쪽에서든 흰 판 위에 올려서 색이 일정하게 보이도록 합니다. */
@@ -475,7 +477,7 @@ button { font: inherit; color: inherit; }
 /* 본문은 720px 이지만 다이어그램은 양옆으로 더 넓게 씁니다.
    좁은 화면에서는 그냥 본문 폭에 맞춥니다. */
 .prose .mermaid {
-  --bleed: 130px;
+  --bleed: 160px;
   margin-inline: calc(var(--bleed) * -1);
 }
 @media (max-width: 1040px) {
