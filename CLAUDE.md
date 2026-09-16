@@ -88,25 +88,19 @@ class SRV zone
 ⚠️ subgraph 에 **바깥 노드와 이어지는 선이 있으면 Mermaid 가 `direction` 을 무시합니다.**
 안쪽 방향을 바꾸려 하지 말고, 바깥 `flowchart` 방향에 맞춰 쓰세요.
 
-### 누가 설정하는가 — 점선 상자 하단에 한 줄
+### 누가 설정하는가 — 그 상자 안 마지막 줄
 
-**설정 정보를 적겠다고 색 있는 상자를 새로 만들지 마세요.** 해당 망의 `subgraph` 안에
-**테두리 없는 텍스트 노드**를 하나 두면, Mermaid 가 그 칸 아래쪽에 놓아줍니다.
+**설정 설명 때문에 상자나 텍스트 노드를 따로 만들지 마세요.** 그 설정이 붙는 상자의
+**마지막 `<small>` 줄**로 넣습니다. 연결 없는 노드를 두면 레이아웃 엔진이 엉뚱한 곳에
+놓고, 점선 묶음만 커집니다.
 
 ```
-subgraph SRV["server side"]
-    F["firewall"] --> S["server"]
-    NOTE["<small>* set by the network admin</small>"]
-end
-class NOTE note
-classDef note fill:none,stroke:none,color:#64748b
+F["firewall<br/><small>8000 &rarr; internal IP:8100</small><br/><small>* set by the network admin</small>"]
 ```
 
-- 다른 노드와 **선으로 잇지 않습니다.** 그래야 아래쪽에 따로 놓입니다.
-- ⚠️ **반드시 `<small>` 로 감쌉니다.** 라벨이 `*` 로 시작하면 Mermaid 가 마크다운 목록으로
-  읽어 `Unsupported markdown: list` 가 찍힙니다.
-- 문구는 한 줄로. `* set by the network admin`, `* set by the server operator, in nginx.conf`,
-  `* you run ssh -D 9999 and point the app at it`
+- 한 줄로 짧게. `* set by the network admin`, `* set by the server operator`, `* ssh -D 9999`
+- **주석 줄이 그 상자에서 가장 긴 줄이 되지 않게** 하세요. 가장 길면 글씨가 상자 밖으로
+  삐져나올 수 있습니다.
 
 ### legend 는 쓰지 않습니다
 
@@ -118,10 +112,24 @@ classDef note fill:none,stroke:none,color:#64748b
 `subgraph` 두 개를 만들고 `PF ~~~ PX` 로 **위아래로 쌓습니다.**
 그냥 두면 좌우로 놓여 폭이 터집니다.
 
-### 폭 맞추기
+### 폭 — 가로 스크롤은 금지
 
-다이어그램 판은 1040px 입니다. **그림이 1000px 를 넘으면 가로 스크롤이 생기니**,
-넘으면 라벨 문구를 줄이세요. 줄일 수 없으면 `TD` 로 세웁니다.
+**어떤 화면 폭에서도 가로로 스크롤하지 않고 한눈에 보여야 합니다.**
+그림은 판 폭에 맞춰 자동으로 줄어듭니다(`fitToPanel`). 그러니 **상자 수를 줄이는 것**이
+유일한 대책입니다. LR 은 상자 4개까지, 그보다 길면 `TD`.
+
+판은 본문(720px)보다 좌우로 넓게 잡되, 화면이 좁아지면 넓히는 양이 0 까지 자동으로
+줄어듭니다(`--bleed: clamp(...)`). 이 값을 고정값으로 되돌리지 마세요. 중간 폭에서 넘칩니다.
+
+### 알려진 함정
+
+- 라벨이 `*` 로 시작하면 Mermaid 가 마크다운 목록으로 읽어 깨집니다. `<small>` 안에 넣으세요.
+- subgraph 에 바깥 노드와 이어지는 선이 있으면 `direction` 이 무시됩니다.
+- `<small>` 크기 규칙은 **전역**(`small { ... }`)으로 둬야 합니다. Mermaid 는 글자 폭을
+  `.mermaid` 바깥의 임시 요소에서 재기 때문에, 선택자를 `.mermaid small` 로 좁히면
+  잰 폭과 실제 폭이 달라져 글씨가 상자를 넘습니다.
+- 글꼴이 내려오기 전에 그리면 같은 이유로 폭이 어긋납니다. `document.fonts.ready` 를
+  기다린 뒤 `mermaid.run()` 을 부릅니다.
 
 ### 그릴 때 지킬 것
 

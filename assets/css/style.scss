@@ -463,11 +463,14 @@ button { font: inherit; color: inherit; }
   border: 1px solid var(--line);
   border-radius: 14px;
   text-align: center;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
-.mermaid svg { max-width: 100%; height: auto; margin: 0 auto; }
-/* 다이어그램 안의 글씨는 전부 손글씨입니다. <small> 은 크기만 줄입니다. */
-.mermaid small {
+.mermaid svg { max-width: 100%; width: 100%; height: auto; }
+/* 다이어그램 안의 글씨는 전부 손글씨입니다. <small> 은 크기만 줄입니다.
+   mermaid 는 라벨 폭을 잴 때 .mermaid 바깥의 임시 요소를 쓰기 때문에,
+   이 규칙은 전역으로 둬야 잰 폭과 실제 폭이 같아집니다.
+   (전역으로 두지 않으면 긴 줄이 상자 밖으로 삐져나옵니다.) */
+small {
   display: block;
   margin-top: 2px;
   font-family: inherit;
@@ -475,13 +478,10 @@ button { font: inherit; color: inherit; }
 }
 
 /* 본문은 720px 이지만 다이어그램은 양옆으로 더 넓게 씁니다.
-   좁은 화면에서는 그냥 본문 폭에 맞춥니다. */
+   화면이 좁아지면 넓히는 양이 0 까지 자동으로 줄어서, 어떤 폭에서도 넘치지 않습니다. */
 .prose .mermaid {
-  --bleed: 160px;
+  --bleed: clamp(0px, (100vw - 764px) / 2, 160px);
   margin-inline: calc(var(--bleed) * -1);
-}
-@media (max-width: 1040px) {
-  .prose .mermaid { --bleed: 0px; }
 }
 
 

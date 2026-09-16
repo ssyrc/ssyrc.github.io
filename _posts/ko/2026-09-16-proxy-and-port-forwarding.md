@@ -75,21 +75,18 @@ flowchart LR
         C["client"]
     end
     subgraph SRV["server side"]
-        F["firewall<br/><small>rewrites the destination</small><br/><small>8000 &rarr; internal IP:8100</small>"] --> S["server<br/><small>internal IP:8100</small>"]
-        NOTE["<small>* set by the network admin</small>"]
+        F["firewall<br/><small>8000 &rarr; internal IP:8100</small><br/><small>* set by the network admin</small>"] --> S["server<br/><small>internal IP:8100</small>"]
     end
     C --> F
     class C client
     class F kernel
     class S server
-    class NOTE note
     class LOCAL,SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
-    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 클라이언트가 할 일은 없습니다. 그냥 공인 주소로 접속할 뿐이고, 자기 패킷이 도중에
@@ -124,29 +121,23 @@ SSH 서버를 거쳐 목적지로 나갑니다.
 ```mermaid
 flowchart LR
     subgraph LOCAL["your machine"]
-        C["client"] --> P["SOCKS proxy<br/><small>localhost:9999</small>"]
-        NOTE["<small>* you run ssh -D 9999 and point the app at it</small>"]
+        C["client<br/><small>* you point the app here</small>"] --> P["SOCKS proxy<br/><small>localhost:9999</small><br/><small>* ssh -D 9999</small>"]
     end
-    subgraph REMOTE["remote network"]
-        A["remote A"]
-        B["remote B"]
-        D["remote C"]
+    subgraph SRV["server side"]
+        H["SSH server"] --> A["remote server A"]
+        H --> B["remote server B"]
+        H --> D["remote server C"]
     end
-    P --> H["SSH server"]
-    H --> A
-    H --> B
-    H --> D
+    P --> H
     class C client
     class P,H proxy
     class A,B,D server
-    class NOTE note
-    class LOCAL,REMOTE zone
+    class LOCAL,SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
-    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 여기서 짚을 점이 세 개 있습니다.
@@ -177,21 +168,18 @@ flowchart LR
         C["client"]
     end
     subgraph SRV["server side"]
-        N["nginx<br/><small>proxy_pass</small>"] --> R["remote server<br/><small>Remote_IP:8100</small>"]
-        NOTE["<small>* set by the server operator, in nginx.conf</small>"]
+        N["nginx<br/><small>proxy_pass</small><br/><small>* set by the server operator</small>"] --> R["remote server<br/><small>Remote_IP:8100</small>"]
     end
     C --> N
     class C client
     class N proxy
     class R server
-    class NOTE note
     class LOCAL,SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
-    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 클라이언트는 그냥 주소 하나로 접속할 뿐, 요청이 뒤에서 어떤 식으로 전달되는지
