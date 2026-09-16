@@ -98,5 +98,90 @@ module.exports = {
           ] },
       ],
     },
+
+    // -------------------------------------------------------------------
+    // 데이터센터 전력 공급 글. 역할 색은 전기가 흐르는 방향에 맞춰 재사용합니다.
+    // client(초록)=전기가 시작되는 곳, proxy(빨강)=받아서 다시 내보내는 중개 장비,
+    // kernel(빨간 점선)=자동으로, 눈에 안 띄게 동작하는 장치, server(파랑)=최종 목적지.
+    // -------------------------------------------------------------------
+    {
+      id: 'power-path',
+      layout: 'cols',
+      alt: 'utility power and a standby generator both feed an automatic transfer switch, which feeds a UPS, then a PDU, then the server',
+      zones: [
+        { title: 'power source',
+          cols: [
+            [
+              { kind:'client', title:'utility grid', sub:'primary power' },
+              { kind:'client', title:'generator', sub:'standby' },
+            ],
+            [{ kind:'kernel', title:'ATS', sub:'auto switch',
+               note:'* switches automatically on outage' }],
+          ] },
+        { title: 'data center',
+          cols: [
+            [{ kind:'proxy', title:'UPS', sub:'battery backup' }],
+            [{ kind:'proxy', title:'PDU', sub:'splits circuits' }],
+            [{ kind:'server', title:'server', sub:'PSU makes DC' }],
+          ] },
+      ],
+    },
+
+    {
+      id: 'power-outage-timeline',
+      layout: 'cols',
+      alt: 'when the grid drops, the UPS battery covers the first seconds until the generator comes online',
+      zones: [
+        { title: 'power outage timeline',
+          cols: [
+            [{ kind:'kernel', title:'grid drops', sub:'outage detected' }],
+            [{ kind:'proxy', title:'UPS battery', sub:'covers the first seconds',
+               note:'* bridges the gap while the generator starts' }],
+            [{ kind:'server', title:'generator running', sub:'ATS switches the load over' }],
+          ] },
+      ],
+    },
+
+    {
+      // server 상자는 뺐습니다 — diagram 1(power-path)에 이미 나왔고, 5개 상자를
+      // 다 넣으면 자연 폭이 넓어져 휴대폰에서 글씨가 너무 작아집니다.
+      id: 'pdu-naming',
+      layout: 'cols',
+      alt: 'the room-level PDU feeds an overhead busway, which a tap box taps into for one rack; inside the rack a rack PDU is where the server plugs in',
+      zones: [
+        { title: 'data center floor',
+          cols: [
+            [{ kind:'proxy', title:'PDU', sub:'steps down voltage' }],
+            [{ kind:'kernel', title:'busway', sub:'conductor rail' }],
+          ] },
+        { title: 'inside the rack',
+          cols: [
+            [{ kind:'proxy', title:'TAP BOX', sub:'taps off one circuit' }],
+            [{ kind:'proxy', title:'rack PDU', sub:'server plugs in here',
+               note:'* often just called "the PDU" too' }],
+          ] },
+      ],
+    },
+
+    {
+      id: 'psu-redundancy',
+      layout: 'cols',
+      alt: 'two separate rack PDU feeds each power their own PSU, and either PSU alone can keep the server running',
+      zones: [
+        { title: 'inside the rack',
+          cols: [
+            [
+              { kind:'proxy', title:'rack PDU A', sub:'feed A' },
+              { kind:'proxy', title:'rack PDU B', sub:'feed B' },
+            ],
+            [
+              { kind:'server', title:'PSU 1', sub:'AC → DC' },
+              { kind:'server', title:'PSU 2', sub:'AC → DC' },
+            ],
+            [{ kind:'server', title:'server board', sub:'either PSU alone is enough',
+               note:'* N+1 — one PSU can fail without downtime' }],
+          ] },
+      ],
+    },
   ],
 };

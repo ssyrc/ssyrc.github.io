@@ -15,8 +15,6 @@ layout: default
     {% endif %}
     <h1 class="post-title">{{ page.title }}</h1>
     <p class="post-meta">
-      <span>{{ site.author }}</span>
-      <span class="sep" aria-hidden="true"></span>
       <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y.%m.%d" }}</time>
       {% if page.updated %}<span class="sep" aria-hidden="true"></span><span>{{ t.updated }} {{ page.updated | date: "%Y.%m.%d" }}</span>{% endif %}
     </p>

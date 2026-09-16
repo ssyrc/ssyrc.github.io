@@ -19,23 +19,25 @@
              aria-roledescription="slide"
              aria-label="{{ forloop.index }} / {{ include.posts.size }}"
              {% unless forloop.first %}aria-hidden="true"{% endunless %}>
-      <div class="hero-text">
-        <p class="hero-kicker"><span class="mark">{{ cat[include.lang] | default: site.title }}</span><span class="dot">.</span></p>
-        <p class="hero-meta">
-          <span>{{ site.author }}</span>
-          <span class="sep" aria-hidden="true"></span>
-          <time datetime="{{ p.date | date_to_xmlschema }}">{{ p.date | date: "%Y.%m.%d" }}</time>
-        </p>
-        <h2 class="hero-title"><a href="{{ p.url | relative_url }}">{{ p.title }}</a></h2>
-        {% if p.excerpt %}
-        <p class="hero-excerpt">{{ p.excerpt | strip_html | normalize_whitespace }}</p>
-        {% endif %}
-        <a class="hero-cta" href="{{ p.url | relative_url }}" aria-label="{{ t.read_post }}: {{ p.title }}">&rarr;</a>
-      </div>
-      <div class="hero-media">
-        <img src="{{ cover | relative_url }}" alt="" width="1200" height="675"
-             {% unless forloop.first %}loading="lazy"{% endunless %} decoding="async">
-      </div>
+      {% comment %} display:contents 로 감싸서 그림까지 전체 영역이 하나의 링크가 되게 합니다.
+                     레이아웃은 .hero-slide 의 grid 그대로 유지됩니다. {% endcomment %}
+      <a class="hero-link" href="{{ p.url | relative_url }}" aria-label="{{ t.read_post }}: {{ p.title }}">
+        <div class="hero-text">
+          <p class="hero-kicker"><span class="mark">{{ cat[include.lang] | default: site.title }}</span><span class="dot">.</span></p>
+          <p class="hero-meta">
+            <time datetime="{{ p.date | date_to_xmlschema }}">{{ p.date | date: "%Y.%m.%d" }}</time>
+          </p>
+          <h2 class="hero-title">{{ p.title }}</h2>
+          {% if p.excerpt %}
+          <p class="hero-excerpt">{{ p.excerpt | strip_html | normalize_whitespace }}</p>
+          {% endif %}
+          <span class="hero-cta" aria-hidden="true">&rarr;</span>
+        </div>
+        <div class="hero-media">
+          <img src="{{ cover | relative_url }}" alt="" width="1200" height="675"
+               {% unless forloop.first %}loading="lazy"{% endunless %} decoding="async">
+        </div>
+      </a>
     </article>
     {% endfor %}
   </div>
