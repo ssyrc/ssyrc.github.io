@@ -104,32 +104,64 @@ module.exports = {
     // kernel(빨간 점선)=자동으로, 눈에 안 띄게 동작하는 장치, server(파랑)=최종 목적지.
     // -------------------------------------------------------------------
 
-    // 1. 전력이 지나가는 길 — 평상시 흐르는 길(실선)과 정전 때만 흐르는 길(점선)을
-    //    갈라 그립니다. UPS 는 평상시 부하를 지고 있지 않고 대기만 합니다.
-    //    그리고 랙에서 끊지 않고 서버 PSU 까지 이어줍니다.
+    // 1. 전력이 지나가는 길 — 전력실 PDU 와 랙 PDU 는 서로 다른 장비입니다.
+    //    부하는 평상시에도 UPS 를 통과합니다. 평소에 정말로 꺼져 있는 것은 발전기뿐입니다.
     {
       id: 'power-path',
       layout: 'cols',
-      alt: 'day to day the utility feeds the switchboard, the rack PDU and then the server PSU; the UPS sits on standby and only carries the load when that feed drops',
+      alt: 'the utility feeds a transfer switch, then the UPS and the room PDU in the electrical room, then the rack PDU and the server PSU; the generator stays shut down until the utility drops',
       zones: [
         { title: 'power source',
           cols: [
             [
               { kind:'client', title:'utility grid', sub:'everyday source' },
-              { kind:'client', title:'generator', sub:'starts on outage', arrowDash: true },
+              { kind:'client', title:'generator', sub:'off until needed', arrowDash: true,
+                note:'* starts only on an outage' },
             ],
-            [{ kind:'kernel', title:'ATS', sub:'picks the live source' }],
+            [{ kind:'kernel', title:'ATS', sub:'picks the source' }],
           ] },
-        { title: 'data center',
+        { title: 'electrical room',
           cols: [
-            [
-              { kind:'kernel', title:'switchboard', sub:'the everyday path',
-                note:'* carries the load all day' },
-              { kind:'proxy', title:'UPS', sub:'battery on standby', arrowDash: true,
-                note:'* steps in only when the feed drops' },
-            ],
-            [{ kind:'proxy', title:'rack PDU', sub:'outlets in the rack' }],
+            [{ kind:'proxy', title:'UPS', sub:'batteries inside',
+               note:'* the load runs through it' }],
+            [{ kind:'proxy', title:'PDU', sub:'branch circuits' }],
+          ] },
+        { title: 'rack',
+          cols: [
+            [{ kind:'proxy', title:'rack PDU', sub:'rack outlets' }],
             [{ kind:'server', title:'server PSU', sub:'AC \u2192 DC' }],
+          ] },
+      ],
+    },
+
+    // 1-b. UPS 두 방식 — 부하가 UPS 를 통과하느냐, 아니면 UPS 가 비켜 있다가 끼어드느냐.
+    {
+      id: 'ups-topology',
+      layout: 'compare',
+      alt: 'in a double conversion UPS the load always runs through the UPS, so there is no gap; in a standby UPS the feed passes straight to the load and the UPS only takes over when it drops',
+      groups: [
+        { caption: 'double conversion (online)',
+          zones: [
+            { title: 'everyday path',
+              cols: [
+                [{ kind:'client', title:'utility grid', sub:'incoming feed' }],
+                [{ kind:'proxy', title:'UPS', sub:'always in the path',
+                   note:'* converts AC \u2192 DC \u2192 AC all day' }],
+                [{ kind:'server', title:'server', sub:'never sees a gap' }],
+              ] },
+          ] },
+        { caption: 'standby / line-interactive',
+          zones: [
+            { title: 'everyday path',
+              cols: [
+                [{ kind:'client', title:'utility grid', sub:'incoming feed' }],
+                [
+                  { kind:'kernel', title:'transfer switch', sub:'passes it straight through' },
+                  { kind:'proxy', title:'UPS', sub:'waits on battery', arrowDash: true,
+                    note:'* takes over when the feed drops' },
+                ],
+                [{ kind:'server', title:'server', sub:'brief gap on transfer' }],
+              ] },
           ] },
       ],
     },
@@ -188,6 +220,36 @@ module.exports = {
             ],
             [{ kind:'server', title:'server board', sub:'either PSU alone is enough',
                note:'* N+1 \u2014 one PSU can fail without downtime' }],
+          ] },
+      ],
+    },
+
+    // 5. 이중화 — 2N. 인입부터 랙 PDU 까지 두 벌이 각각 서버의 PSU 한 쪽씩을 먹입니다.
+    {
+      id: 'redundancy-2n',
+      layout: 'cols',
+      alt: 'in a 2N design two fully independent feeds each run their own UPS and rack PDU into one of the two power supplies of the same dual corded server',
+      zones: [
+        { title: '2N \u2014 two independent paths',
+          cols: [
+            [
+              { kind:'client', title:'feed A', sub:'utility + generator' },
+              { kind:'client', title:'feed B', sub:'utility + generator' },
+            ],
+            [
+              { kind:'proxy', title:'UPS A', sub:'own batteries' },
+              { kind:'proxy', title:'UPS B', sub:'own batteries' },
+            ],
+            [
+              { kind:'proxy', title:'rack PDU A', sub:'own breaker' },
+              { kind:'proxy', title:'rack PDU B', sub:'own breaker' },
+            ],
+            [
+              { kind:'server', title:'PSU 1', sub:'AC \u2192 DC' },
+              { kind:'server', title:'PSU 2', sub:'AC \u2192 DC' },
+            ],
+            [{ kind:'server', title:'server', sub:'dual corded',
+               note:'* a whole path can die and nothing stops' }],
           ] },
       ],
     },
