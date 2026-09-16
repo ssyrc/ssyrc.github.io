@@ -30,12 +30,12 @@ mermaid: true
 flowchart TB
     subgraph PF["port forwarding"]
         direction LR
-        C1["client"] --> K1["fixed rule<br/><small>public IP:8000 &rarr; internal IP:8100</small>"]
-        K1 --> S1["server<br/><small>always the same one</small>"]
+        C1["client"] --> K1["fixed rule<br/><small>8000 &rarr; IP:8100</small>"]
+        K1 --> S1["server<br/><small>always the same</small>"]
     end
     subgraph PX["proxy"]
         direction LR
-        C2["client"] -->|"connection 1"| P2["proxy<br/><small>ends one, dials another</small>"]
+        C2["client"] -->|"connection 1"| P2["proxy"]
         P2 -->|"connection 2"| S2["server<br/><small>picked per request</small>"]
     end
     PF ~~~ PX
@@ -47,7 +47,6 @@ flowchart TB
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
-    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
 ```
 
 위쪽은 연결이 **하나**입니다. 클라이언트가 연 연결이 목적지 주소만 바뀐 채
@@ -65,27 +64,6 @@ flowchart TB
 
 ## 2. 포트 포워딩
 
-시나리오를 하나씩 보기 전에, 앞으로 나올 그림의 약속을 먼저 정리하겠습니다.
-
-```mermaid
-flowchart LR
-    L1["client<br/><small>makes the request</small>"] ~~~ L2["intermediary<br/><small>connects for you</small>"] ~~~ L3["destination<br/><small>server</small>"] ~~~ L4["kernel<br/><small>rewrites packets</small>"]
-    class L1 client
-    class L2 proxy
-    class L3 server
-    class L4 kernel
-    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
-    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
-    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
-    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
-```
-
-여기에 두 가지 표시가 더 붙습니다.
-
-- **점선 사각형** — 서로 다른 망을 묶은 것입니다. 상자 위에 적힌 이름이 그 망입니다.
-- **`*` 로 시작하는 줄** — 그 상자를 **누가 어디서 설정하는지**입니다.
-{: .note}
-
 ### NAT 포트 포워딩
 
 가장 기본이 되는 형태. 클라이언트는 공인 주소의 특정 포트로 접속하고,
@@ -93,21 +71,25 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    C["client<br/><small>sends to public IP:8000</small>"]
-    C --> F["firewall rewrites<br/>the destination address<br/><small>8000 &rarr; internal IP:8100</small><br/><small>* set by the network admin,<br/>in the router or firewall</small>"]
-    subgraph INT["internal network"]
-        S["server<br/><small>listens on internal IP:8100</small>"]
+    subgraph LOCAL["your machine"]
+        C["client"]
     end
-    F --> S
+    subgraph SRV["server side"]
+        F["firewall<br/><small>rewrites the destination</small><br/><small>8000 &rarr; internal IP:8100</small>"] --> S["server<br/><small>internal IP:8100</small>"]
+        NOTE["<small>* set by the network admin</small>"]
+    end
+    C --> F
     class C client
     class F kernel
     class S server
-    class INT zone
+    class NOTE note
+    class LOCAL,SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
+    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 클라이언트가 할 일은 없습니다. 그냥 공인 주소로 접속할 뿐이고, 자기 패킷이 도중에
@@ -142,31 +124,29 @@ SSH 서버를 거쳐 목적지로 나갑니다.
 ```mermaid
 flowchart LR
     subgraph LOCAL["your machine"]
-        direction TB
-        C["client<br/><small>proxy set to localhost:9999</small><br/><small>* you set this</small>"]
-        P["SOCKS proxy<br/><small>listens on localhost:9999</small><br/><small>* created by ssh -D 9999</small>"]
+        C["client"] --> P["SOCKS proxy<br/><small>localhost:9999</small>"]
+        NOTE["<small>* you run ssh -D 9999 and point the app at it</small>"]
     end
     subgraph REMOTE["remote network"]
-        direction TB
         A["remote A"]
         B["remote B"]
         D["remote C"]
     end
-    C --> P
-    P --> H["SSH server<br/><small>no fixed target</small>"]
+    P --> H["SSH server"]
     H --> A
     H --> B
     H --> D
     class C client
-    class P proxy
-    class H proxy
+    class P,H proxy
     class A,B,D server
+    class NOTE note
     class LOCAL,REMOTE zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
+    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 여기서 짚을 점이 세 개 있습니다.
@@ -193,23 +173,25 @@ SSH 서버 입장에서 특별히 해둘 설정이 없고, SSH가 떠 있기만 
 
 ```mermaid
 flowchart LR
-    C["client<br/><small>requests my-url</small>"]
+    subgraph LOCAL["your machine"]
+        C["client"]
+    end
     subgraph SRV["server side"]
-        direction TB
-        N["nginx<br/><small>routes by proxy_pass rules</small><br/><small>* set by the server operator,<br/>in nginx.conf</small>"]
-        R["remote server<br/><small>listens on Remote_IP:8100</small>"]
+        N["nginx<br/><small>proxy_pass</small>"] --> R["remote server<br/><small>Remote_IP:8100</small>"]
+        NOTE["<small>* set by the server operator, in nginx.conf</small>"]
     end
     C --> N
-    N --> R
     class C client
     class N proxy
     class R server
-    class SRV zone
+    class NOTE note
+    class LOCAL,SRV zone
     classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
     classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
+    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 클라이언트는 그냥 주소 하나로 접속할 뿐, 요청이 뒤에서 어떤 식으로 전달되는지

@@ -24,7 +24,8 @@ Mermaid 11 의 `look: handDrawn` 을 쓰며, 설정은 `_includes/mermaid.html` 
 | `proxy` | 빨강 | 사용자 공간에서 연결을 대신 맺어주는 중개자 |
 | `server` | 파랑 | 최종 목적지 |
 | `kernel` | 빨간 점선 | 커널이 패킷을 고쳐 보내는 구간 (프로세스가 아님) |
-| `zone` | 회색 점선 묶음 | 서로 다른 망을 묶는 `subgraph` (내 컴퓨터, 원격 망 등) |
+| `zone` | 회색 점선 묶음 | 서로 다른 망을 묶는 `subgraph` (your machine, server side 등) |
+| `note` | 테두리 없는 회색 글씨 | 점선 묶음 하단에 놓는 `* 누가 설정하는가` 한 줄 |
 
 ```mermaid
 flowchart LR
@@ -38,6 +39,7 @@ flowchart LR
     classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
     classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
     classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
+    classDef note   fill:none,stroke:none,color:#64748b
 ```
 
 ### 다이어그램 안의 글자는 영어로
@@ -59,47 +61,57 @@ flowchart LR
 나쁜 예: `["방화벽 · 공유기가 목적지 주소를 바꿈"]`
 좋은 예: `["firewall rewrites<br/>the destination address"]`
 
-### 누가 설정하는가 — 상자 안에 `*` 한 줄
+### 상자 안 내용은 최소로
 
-**설정 정보를 적겠다고 상자를 새로 만들지 마세요.** 그 설정이 붙는 상자 안에,
-맨 아랫줄로 `*` 로 시작하는 작은 줄을 하나 넣습니다.
+상자에는 **이름 한 줄 + 꼭 필요한 값 한두 줄**만 넣습니다.
+설명이 길어지면 그림이 읽히지 않습니다. 자세한 설명은 본문(한국어)에서 풉니다.
 
 ```
-N["nginx<br/><small>routes by proxy_pass rules</small><br/><small>* set by the server operator,<br/>in nginx.conf</small>"]
+F["firewall<br/><small>rewrites the destination</small><br/><small>8000 &rarr; internal IP:8100</small>"]
+S["server<br/><small>internal IP:8100</small>"]
+C["client"]
 ```
-
-- **누가** 그리고 **어디에** 적는지를 한 줄로. `* set by the network admin, in the router`,
-  `* you set this`, `* created by ssh -D 9999`
-- 길어지면 `<br/>` 로 두 줄까지만.
 
 ### 망은 점선 사각형으로 묶기
 
-서로 다른 망(내 컴퓨터, 내부망, 원격 망)은 `subgraph` 로 묶고 `zone` 클래스를 줍니다.
-망 이름은 subgraph 제목으로 들어가고, Mermaid 가 상자 위쪽에 그립니다.
+`your machine`, `server side`, `remote network` 처럼 **어느 망에 있는지**를
+`subgraph` 로 묶고 `zone` 클래스를 줍니다. 제목은 **한 줄로 짧게** — 길면 줄바꿈되어
+상자에 가려 잘립니다.
 
 ```
-subgraph LOCAL["your machine"]
-    direction TB
-    C["client"]
-    P["SOCKS proxy"]
+subgraph SRV["server side"]
+    F["firewall"] --> S["server"]
 end
-class LOCAL zone
+class SRV zone
 ```
 
-- 제목은 **한 줄로 짧게**. 길면 줄바꿈되어 상자에 가려 잘립니다.
-- 안쪽을 세로로 쌓으려면 `direction TB` 를 넣습니다. 그래야 그림이 옆으로 안 퍼집니다.
+⚠️ subgraph 에 **바깥 노드와 이어지는 선이 있으면 Mermaid 가 `direction` 을 무시합니다.**
+안쪽 방향을 바꾸려 하지 말고, 바깥 `flowchart` 방향에 맞춰 쓰세요.
 
-### legend
+### 누가 설정하는가 — 점선 상자 하단에 한 줄
 
-여러 시나리오가 이어지는 글이면, **첫 시나리오 앞에 legend 다이어그램을 한 번** 둡니다.
-상자 색이 무엇을 뜻하는지만 보여주고, 점선 묶음과 `*` 의 뜻은 바로 아래 한국어로 적습니다.
+**설정 정보를 적겠다고 색 있는 상자를 새로 만들지 마세요.** 해당 망의 `subgraph` 안에
+**테두리 없는 텍스트 노드**를 하나 두면, Mermaid 가 그 칸 아래쪽에 놓아줍니다.
 
 ```
-flowchart LR
-    L1["client<br/><small>makes the request</small>"] ~~~ L2["intermediary<br/><small>connects for you</small>"] ~~~ L3["destination<br/><small>server</small>"] ~~~ L4["kernel<br/><small>rewrites packets</small>"]
+subgraph SRV["server side"]
+    F["firewall"] --> S["server"]
+    NOTE["<small>* set by the network admin</small>"]
+end
+class NOTE note
+classDef note fill:none,stroke:none,color:#64748b
 ```
 
-`~~~` 는 보이지 않는 선입니다. 이걸로 이어야 가로로 놓입니다. 안 그러면 세로로 쌓입니다.
+- 다른 노드와 **선으로 잇지 않습니다.** 그래야 아래쪽에 따로 놓입니다.
+- ⚠️ **반드시 `<small>` 로 감쌉니다.** 라벨이 `*` 로 시작하면 Mermaid 가 마크다운 목록으로
+  읽어 `Unsupported markdown: list` 가 찍힙니다.
+- 문구는 한 줄로. `* set by the network admin`, `* set by the server operator, in nginx.conf`,
+  `* you run ssh -D 9999 and point the app at it`
+
+### legend 는 쓰지 않습니다
+
+색과 점선의 뜻을 따로 설명하는 legend 다이어그램은 넣지 마세요.
+망 이름과 `*` 한 줄이면 그림만 보고도 읽힙니다.
 
 ### 두 방식을 나란히 비교할 때
 
