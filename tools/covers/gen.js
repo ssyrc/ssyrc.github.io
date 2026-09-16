@@ -73,17 +73,17 @@ const scenes = {
     const o = [];
     o.push(floor(8, 5, { hx0: -122, depth0: -52, step: 30 }));
 
-    // 전력 설비 한 줄
+    // 전력 설비 한 줄 — 본문 1절의 순서 그대로 (한전 → 발전기 → ATS → UPS)
     const E = row(-130, -55, 30);
     o.push(T.transformer(...E(0)));
     o.push(T.generator(...E(1)));
-    o.push(T.cabinet(...E(2), { w: 16, h: 36, badge: '#38BDF8' }));
-    o.push(T.battery(...E(2.8)));
-    o.push(T.cabinet(...E(3.9), { w: 18, h: 38, badge: '#FBBF24' }));
+    o.push(T.cabinet(...E(2), { w: 16, h: 34, badge: '#FBBF24' }));
+    o.push(T.cabinet(...E(3), { w: 17, h: 38, badge: '#38BDF8' }));
+    o.push(T.battery(...E(3.85)));
     o.push(T.label(...E(0), 20, 'UTILITY', { dy: -26, size: 9, dx: -14 }));
     o.push(T.label(...E(1), 26, 'GENERATOR', { dy: -54, size: 9, dx: 16 }));
-    o.push(T.label(...E(2), 38, 'UPS', { dy: -28, size: 9 }));
-    o.push(T.label(...E(3.9), 40, 'PDU', { dy: -48, size: 9 }));
+    o.push(T.label(...E(2), 36, 'ATS', { dy: -28, size: 9 }));
+    o.push(T.label(...E(3), 40, 'UPS', { dy: -50, size: 9 }));
 
     // 랙 뒷줄 + 버스덕트
     const R1 = row(2, -30, 30);
@@ -97,7 +97,7 @@ const scenes = {
     o.push(T.label(...R2(4), 30, 'RACK', { dy: 6, size: 9, dx: 46, anchor: 'start' }));
 
     // 전기가 흐르는 길
-    const p = [[...E(0), 18], [...E(1), 24], [...E(2), 36], [...E(3.9), 38], [...R2(0), 50]];
+    const p = [[...E(0), 18], [...E(1), 24], [...E(2), 34], [...E(3), 38], [...R2(0), 50]];
     for (let i = 0; i < p.length - 1; i++)
       o.push(line([p[i][0], p[i][1], p[i][2]], [p[i + 1][0], p[i + 1][1], p[i + 1][2]], '#FBBF24', { sw: 2.2 }));
 

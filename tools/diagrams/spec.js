@@ -17,7 +17,6 @@ module.exports = {
       id: 'forwarding-vs-proxy',
       layout: 'compare',
       alt: 'port forwarding relays one connection through a fixed rule to a destination that never changes; a proxy ends that connection and opens a second, separate one that can go to a different destination each time',
-      arrowColor: '#131A2E',
       groups: [
         { caption: 'port forwarding',
           zones: [
@@ -104,10 +103,13 @@ module.exports = {
     // client(초록)=전기가 시작되는 곳, proxy(빨강)=받아서 다시 내보내는 중개 장비,
     // kernel(빨간 점선)=자동으로, 눈에 안 띄게 동작하는 장치, server(파랑)=최종 목적지.
     // -------------------------------------------------------------------
+
+    // 1. 전력이 지나가는 길 — ATS 에서 두 갈래로 갈립니다.
+    //    IT 부하만 UPS 를 타고, 냉각 같은 기계 부하는 UPS 를 타지 않습니다.
     {
       id: 'power-path',
       layout: 'cols',
-      alt: 'utility power and a standby generator both feed an automatic transfer switch, which feeds a UPS, then a PDU, then the server',
+      alt: 'utility power and a standby generator feed a transfer switch, which splits into the IT load through the UPS and the cooling load that bypasses it',
       zones: [
         { title: 'power source',
           cols: [
@@ -115,18 +117,21 @@ module.exports = {
               { kind:'client', title:'utility grid', sub:'primary power' },
               { kind:'client', title:'generator', sub:'standby' },
             ],
-            [{ kind:'kernel', title:'ATS', sub:'auto switch',
-               note:'* switches automatically on outage' }],
+            [{ kind:'kernel', title:'ATS', sub:'picks the source' }],
           ] },
         { title: 'data center',
           cols: [
-            [{ kind:'proxy', title:'UPS', sub:'battery backup' }],
-            [{ kind:'proxy', title:'PDU', sub:'splits circuits' }],
-            [{ kind:'server', title:'server', sub:'PSU makes DC' }],
+            [
+              { kind:'proxy', title:'UPS', sub:'battery backup' },
+              { kind:'server', title:'cooling', sub:'chillers, fans', end: true,
+                note:'* no UPS on this side' },
+            ],
+            [{ kind:'server', title:'rack', sub:'the IT load' }],
           ] },
       ],
     },
 
+    // 2. 정전에도 서버가 안 꺼지는 이유
     {
       id: 'power-outage-timeline',
       layout: 'cols',
@@ -142,27 +147,27 @@ module.exports = {
       ],
     },
 
+    // 3. 버스덕트 · TAP BOX · 리셉터클 — 랙까지 전기를 끌어오는 마지막 구간
     {
-      // server 상자는 뺐습니다 — diagram 1(power-path)에 이미 나왔고, 5개 상자를
-      // 다 넣으면 자연 폭이 넓어져 휴대폰에서 글씨가 너무 작아집니다.
-      id: 'pdu-naming',
+      id: 'busway-tapbox',
       layout: 'cols',
-      alt: 'the room-level PDU feeds an overhead busway, which a tap box taps into for one rack; inside the rack a rack PDU is where the server plugs in',
+      alt: 'an overhead busway runs above the rack row; a tap box clamps onto it and its receptacle is where the rack power cord plugs in',
       zones: [
-        { title: 'data center floor',
+        { title: 'above the rack',
           cols: [
-            [{ kind:'proxy', title:'PDU', sub:'steps down voltage' }],
             [{ kind:'kernel', title:'busway', sub:'conductor rail' }],
+            [{ kind:'proxy', title:'TAP BOX', sub:'taps off one circuit',
+               note:'* breaker sits in here' }],
+            [{ kind:'proxy', title:'receptacle', sub:'the outlet itself' }],
           ] },
-        { title: 'inside the rack',
+        { title: 'in the rack',
           cols: [
-            [{ kind:'proxy', title:'TAP BOX', sub:'taps off one circuit' }],
-            [{ kind:'proxy', title:'rack PDU', sub:'server plugs in here',
-               note:'* often just called "the PDU" too' }],
+            [{ kind:'server', title:'rack PDU', sub:'power cord plugs in here' }],
           ] },
       ],
     },
 
+    // 4. 랙 PDU · 서버 PSU — 랙 안에서 서버까지
     {
       id: 'psu-redundancy',
       layout: 'cols',
@@ -175,11 +180,11 @@ module.exports = {
               { kind:'proxy', title:'rack PDU B', sub:'feed B' },
             ],
             [
-              { kind:'server', title:'PSU 1', sub:'AC → DC' },
-              { kind:'server', title:'PSU 2', sub:'AC → DC' },
+              { kind:'server', title:'PSU 1', sub:'AC \u2192 DC' },
+              { kind:'server', title:'PSU 2', sub:'AC \u2192 DC' },
             ],
             [{ kind:'server', title:'server board', sub:'either PSU alone is enough',
-               note:'* N+1 — one PSU can fail without downtime' }],
+               note:'* N+1 \u2014 one PSU can fail without downtime' }],
           ] },
       ],
     },

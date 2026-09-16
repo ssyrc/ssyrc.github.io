@@ -14,6 +14,7 @@ const Z_PAD_X = 20, Z_PAD_TOP = 30, Z_PAD_BOT = 16;
 const NOTE_GAP = 6;              // 상자 아래 - 주석 위. 바로 아래 붙입니다.
 const NOTE_H = 16;
 const ARROW_GAP = 4;             // 상자 테두리와 화살표 사이
+const ARROW = '#131A2E';         // 화살표 색 — 모든 다이어그램에서 검정 하나로 고정합니다
 const OUT_PAD = 10;
 const CAP_H = 22;                // compare 배치에서 캡션 한 줄이 쓰는 높이
 const GROUP_GAP = 28;            // compare 배치에서 행(비교 대상) 사이 간격
@@ -105,25 +106,29 @@ function placeBoxesInZone(z) {
   });
 }
 
-// 상자의 arrow 필드는 "이 상자에서 나가는 화살표에 붙일 표시"입니다.
-// 두 다이어그램을 비교할 때 같은 표시가 반복되면 같은 연결이 이어진다는 뜻,
-// 표시가 바뀌면 연결이 끊기고 새로 열렸다는 뜻으로 씁니다.
-function arrowsWithinZone(z) {
+// 앞 열에서 뒤 열로 화살표를 잇습니다.
+// 앞 열이 상자 하나면 뒤 열 전부로 갈라지고, 여럿이면 같은 자리끼리 짝지어집니다.
+// `end: true` 인 상자는 거기서 끝나는 갈래라, 나가는 화살표를 그리지 않습니다.
+// 상자의 `arrow` 는 그 상자에서 나가는 화살표에 붙일 표시입니다 (같은 표시 = 같은 연결).
+function connect(from, to) {
   const arrows = [];
-  const push = (a, b) => arrows.push({
-    x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy, label: a.arrow });
-  for (let i = 0; i < z.cols.length - 1; i++) {
-    const from = z.cols[i], to = z.cols[i + 1];
-    if (from.length === 1) for (const t of to) push(from[0], t);
-    else from.forEach((f, k) => push(f, to[Math.min(k, to.length - 1)]));
-  }
+  const push = (a, b) => {
+    if (a.end) return;
+    arrows.push({ x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy, label: a.arrow });
+  };
+  if (from.length === 1) for (const t of to) push(from[0], t);
+  else from.forEach((f, k) => push(f, to[Math.min(k, to.length - 1)]));
   return arrows;
 }
 
-function arrowBetweenZones(za, zb) {
-  const a = za.cols[za.cols.length - 1][za.cols[za.cols.length - 1].length - 1];
-  const b = zb.cols[0][0];
-  return { x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy, label: a.arrow };
+function arrowsWithinZone(z) {
+  const arrows = [];
+  for (let i = 0; i < z.cols.length - 1; i++) arrows.push(...connect(z.cols[i], z.cols[i + 1]));
+  return arrows;
+}
+
+function arrowsBetweenZones(za, zb) {
+  return connect(za.cols[za.cols.length - 1], zb.cols[0]);
 }
 
 function layout(d, M) {
@@ -168,7 +173,7 @@ function layout(d, M) {
       grp._capX = xOff;
       for (const z of grp.zones) placeBoxesInZone(z);
       for (const z of grp.zones) allArrows.push(...arrowsWithinZone(z));
-      for (let i = 0; i < grp.zones.length - 1; i++) allArrows.push(arrowBetweenZones(grp.zones[i], grp.zones[i + 1]));
+      for (let i = 0; i < grp.zones.length - 1; i++) allArrows.push(...arrowsBetweenZones(grp.zones[i], grp.zones[i + 1]));
       allZones.push(...grp.zones);
     }
     d.zones = allZones;
@@ -184,7 +189,7 @@ function layout(d, M) {
   for (const z of d.zones) placeBoxesInZone(z);
   const arrows = [];
   for (const z of d.zones) arrows.push(...arrowsWithinZone(z));
-  for (let i = 0; i < d.zones.length - 1; i++) arrows.push(arrowBetweenZones(d.zones[i], d.zones[i + 1]));
+  for (let i = 0; i < d.zones.length - 1; i++) arrows.push(...arrowsBetweenZones(d.zones[i], d.zones[i + 1]));
   d.arrows = arrows;
   d.W = Math.ceil(row.w + OUT_PAD * 2);
   d.H = Math.ceil(row.h + OUT_PAD * 2);
@@ -250,7 +255,8 @@ function render(d) {
     }
     if (b.note) o.push(text(b.cx, b.y + b.h + NOTE_GAP + 12, b.note, F_NOTE, '#64748b'));
   }
-  for (const a of d.arrows) o.push(arrow(a, d.arrowColor || '#dc2626'));
+  // 화살표는 언제나 검정입니다. 상자 색(빨강 proxy 등)과 섞이면 흐름이 안 보입니다.
+  for (const a of d.arrows) o.push(arrow(a, ARROW));
   // 화살표 표시(예: ①②) — 같은 연결이 이어지는지, 새 연결이 열리는지 보여줍니다.
   for (const a of d.arrows) if (a.label) o.push(text((a.x1 + a.x2) / 2, Math.min(a.y1, a.y2) - 9, a.label, F_NOTE, '#475569'));
 

@@ -31,11 +31,11 @@
           {% if p.excerpt %}
           <p class="hero-excerpt">{{ p.excerpt | strip_html | normalize_whitespace }}</p>
           {% endif %}
-          <span class="hero-cta" aria-hidden="true">&rarr;</span>
         </div>
         <div class="hero-media">
           <img src="{{ cover | relative_url }}" alt="" width="1200" height="675"
                {% unless forloop.first %}loading="lazy"{% endunless %} decoding="async">
+          <span class="hero-cta" aria-hidden="true">&rarr;</span>
         </div>
       </a>
     </article>
