@@ -125,8 +125,21 @@ cover: /assets/images/covers/내-그림.svg
 (`topic-cs.svg`, `topic-server-network.svg`, `topic-hpc.svg`, `topic-ai.svg`).
 바꾸고 싶으면 `_data/categories.yml` 의 `cover` 값을 고치면 됩니다.
 
-가로세로 비율은 **16:9** 로 맞추는 것이 좋습니다. 사진을 쓴다면
-`assets/images/` 에 올리고 `cover: /assets/images/파일이름.jpg` 로 지정하세요.
+### 글 전용 커버 만들기
+
+커버는 **`tools/covers/` 의 생성기**로 만듭니다. 아이소메트릭 3D 에 영어 라벨을 붙인
+화풍이고, 그 글에 실제로 나오는 장비를 본문 순서대로 세웁니다.
+
+```bash
+cd tools/covers && node gen.js ../../assets/images/covers
+```
+
+`gen.js` 의 `scenes` 에 항목을 하나 추가하면 그 이름으로 SVG 가 만들어집니다.
+크기와 위치는 자동으로 맞춰지니 장면만 짜면 됩니다.
+자세한 것은 [tools/covers/README.md](tools/covers/README.md).
+
+**웹에서 이미지를 가져다 쓰지 마세요.** 데이터센터 도표는 대부분 스톡 이미지이거나
+기업 자료라 블로그에 올릴 수 없습니다. 참고는 화풍까지만 하고 그림은 다시 그립니다.
 
 ### 본문 속 그림
 

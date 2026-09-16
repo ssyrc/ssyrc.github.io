@@ -1,30 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="topiccs">
   <defs>
-    <linearGradient id="bgc" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#4338CA"/><stop offset="55%" stop-color="#5B6CF9"/><stop offset="100%" stop-color="#7DD3FC"/>
-    </linearGradient>
-    <linearGradient id="sheenc" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.30"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04"/>
-    </linearGradient>
-    <linearGradient id="skyc" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#7DD3FC"/><stop offset="100%" stop-color="#38BDF8"/>
+    <linearGradient id="bgtopiccs" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3F3BC4"/><stop offset="60%" stop-color="#6D5DF6"/><stop offset="100%" stop-color="#38BDF8"/>
     </linearGradient>
   </defs>
-  <rect width="1200" height="675" fill="url(#bgc)"/>
-  <circle cx="1045" cy="120" r="210" fill="#ffffff" opacity="0.07"/>
-  <circle cx="150" cy="610" r="170" fill="#ffffff" opacity="0.06"/>
-  <path d="M 600 110 L 980 180 L 600 250 L 220 180 Z" fill="#ffffff" opacity="0.92" stroke="#ffffff" stroke-opacity="0.5" stroke-width="2"/>
-  <path d="M 600 206 L 980 276 L 600 346 L 220 276 Z" fill="#ffffff" opacity="0.74" stroke="#ffffff" stroke-opacity="0.5" stroke-width="2"/>
-  <path d="M 600 302 L 980 372 L 600 442 L 220 372 Z" fill="#ffffff" opacity="0.56" stroke="#ffffff" stroke-opacity="0.5" stroke-width="2"/>
-  <path d="M 600 398 L 980 468 L 600 538 L 220 468 Z" fill="#ffffff" opacity="0.38" stroke="#ffffff" stroke-opacity="0.5" stroke-width="2"/>
-  <circle cx="300" cy="110" r="15" fill="#ffffff" opacity="0.8"/>
-  <circle cx="370" cy="110" r="9" fill="#ffffff" opacity="0.35"/>
-  <circle cx="440" cy="110" r="15" fill="#ffffff" opacity="0.8"/>
-  <circle cx="510" cy="110" r="9" fill="#ffffff" opacity="0.35"/>
-  <circle cx="580" cy="110" r="15" fill="#ffffff" opacity="0.8"/>
-  <circle cx="650" cy="110" r="9" fill="#ffffff" opacity="0.35"/>
-  <circle cx="720" cy="110" r="15" fill="#ffffff" opacity="0.8"/>
-  <circle cx="790" cy="110" r="9" fill="#ffffff" opacity="0.35"/>
-  <circle cx="860" cy="110" r="15" fill="#ffffff" opacity="0.8"/>
+  <rect width="1200" height="675" fill="url(#bgtopiccs)"/>
+  <circle cx="1050" cy="110" r="220" fill="#ffffff" opacity="0.06"/>
+  <circle cx="140" cy="600" r="180" fill="#ffffff" opacity="0.05"/>
+  <g transform="translate(571.7 262.2) scale(3.266)" font-family="ui-sans-serif, system-ui, sans-serif">
+<polygon points="-121.24,-44.10 -96.82,-30.00 -121.24,-15.90 -145.67,-30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-121.24,-14.10 -96.82,0.00 -121.24,14.10 -145.67,0.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-121.24,15.90 -96.82,30.00 -121.24,44.10 -145.67,30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-121.24,45.90 -96.82,60.00 -121.24,74.10 -145.67,60.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-121.24,75.90 -96.82,90.00 -121.24,104.10 -145.67,90.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-69.28,-44.10 -44.86,-30.00 -69.28,-15.90 -93.70,-30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-69.28,-14.10 -44.86,-0.00 -69.28,14.10 -93.70,-0.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-69.28,15.90 -44.86,30.00 -69.28,44.10 -93.70,30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-69.28,45.90 -44.86,60.00 -69.28,74.10 -93.70,60.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-69.28,75.90 -44.86,90.00 -69.28,104.10 -93.70,90.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-17.32,-44.10 7.10,-30.00 -17.32,-15.90 -41.74,-30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-17.32,-14.10 7.10,-0.00 -17.32,14.10 -41.74,0.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-17.32,15.90 7.10,30.00 -17.32,44.10 -41.74,30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-17.32,45.90 7.10,60.00 -17.32,74.10 -41.74,60.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="-17.32,75.90 7.10,90.00 -17.32,104.10 -41.74,90.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="34.64,-44.10 59.06,-30.00 34.64,-15.90 10.22,-30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="34.64,-14.10 59.06,0.00 34.64,14.10 10.22,-0.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="34.64,15.90 59.06,30.00 34.64,44.10 10.22,30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="34.64,45.90 59.06,60.00 34.64,74.10 10.22,60.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="34.64,75.90 59.06,90.00 34.64,104.10 10.22,90.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="86.60,-44.10 111.02,-30.00 86.60,-15.90 62.18,-30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="86.60,-14.10 111.02,0.00 86.60,14.10 62.18,0.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="86.60,15.90 111.02,30.00 86.60,44.10 62.18,30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="86.60,45.90 111.02,60.00 86.60,74.10 62.18,60.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="86.60,75.90 111.02,90.00 86.60,104.10 62.18,90.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="138.56,-44.10 162.99,-30.00 138.56,-15.90 114.14,-30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="138.56,-14.10 162.99,0.00 138.56,14.10 114.14,0.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="138.56,15.90 162.99,30.00 138.56,44.10 114.14,30.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="138.56,45.90 162.99,60.00 138.56,74.10 114.14,60.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="138.56,75.90 162.99,90.00 138.56,104.10 114.14,90.00" fill="#ffffff" opacity="0.055"/>
+<polygon points="0.00,-34.00 45.03,-8.00 0.00,18.00 -45.03,-8.00" fill="#909acc" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="-45.03,0.00 -45.03,-8.00 0.00,18.00 0.00,26.00" fill="#7C86B8" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="45.03,0.00 45.03,-8.00 0.00,18.00 0.00,26.00" fill="#626c9e" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="0.00,-42.00 36.37,-21.00 0.00,0.00 -36.37,-21.00" fill="#a2afdc" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="-36.37,-13.00 -36.37,-21.00 0.00,0.00 0.00,8.00" fill="#8E9BC8" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="36.37,-13.00 36.37,-21.00 0.00,0.00 0.00,8.00" fill="#7481ae" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="0.00,-50.00 27.71,-34.00 0.00,-18.00 -27.71,-34.00" fill="#bdc7f0" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="-27.71,-26.00 -27.71,-34.00 0.00,-18.00 0.00,-10.00" fill="#A9B3DC" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="27.71,-26.00 27.71,-34.00 0.00,-18.00 0.00,-10.00" fill="#8f99c2" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="0.00,-58.00 19.05,-47.00 0.00,-36.00 -19.05,-47.00" fill="#ebf2ff" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="-19.05,-39.00 -19.05,-47.00 0.00,-36.00 0.00,-28.00" fill="#D7DEF6" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+<polygon points="19.05,-39.00 19.05,-47.00 0.00,-36.00 0.00,-28.00" fill="#bdc4dc" stroke="none" stroke-width="1" stroke-linejoin="round"/>
+  </g>
 </svg>
