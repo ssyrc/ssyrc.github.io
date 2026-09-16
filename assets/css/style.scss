@@ -464,13 +464,12 @@ button { font: inherit; color: inherit; }
   overflow-x: auto;
 }
 .mermaid svg { max-width: 100%; height: auto; margin: 0 auto; }
-/* 참고한 그림처럼 박스 이름은 손글씨로, 주소·포트 같은 값은 고정폭으로 */
+/* 다이어그램 안의 글씨는 전부 손글씨입니다. <small> 은 크기만 줄입니다. */
 .mermaid small {
   display: block;
   margin-top: 2px;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.72em;
-  letter-spacing: -0.01em;
+  font-family: inherit;
+  font-size: 0.8em;
 }
 
 /* 본문은 720px 이지만 다이어그램은 양옆으로 더 넓게 씁니다.
