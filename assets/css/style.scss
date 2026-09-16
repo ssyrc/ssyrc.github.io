@@ -46,6 +46,30 @@
   }
 }
 
+/* ==========================================================================
+   다이어그램용 손글씨 글꼴 (Gaegu, OFL). 저장소에 직접 두고 씁니다.
+   @font-face 만 적어두면 실제로 이 글꼴을 쓰는 페이지에서만 내려받습니다.
+   ========================================================================== */
+@font-face {
+  font-family: 'Gaegu';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/gaegu-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+                 U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Gaegu';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/gaegu-korean-400.woff2') format('woff2');
+  unicode-range: U+1100-11FF, U+3130-318F, U+A960-A97F, U+AC00-D7A3, U+D7B0-D7FF,
+                 U+3000-303F, U+FF00-FFEF;
+}
+
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
@@ -439,7 +463,26 @@ button { font: inherit; color: inherit; }
   text-align: center;
   overflow-x: auto;
 }
-.mermaid svg { max-width: 100%; height: auto; }
+.mermaid svg { max-width: 100%; height: auto; margin: 0 auto; }
+/* 참고한 그림처럼 박스 이름은 손글씨로, 주소·포트 같은 값은 고정폭으로 */
+.mermaid small {
+  display: block;
+  margin-top: 2px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.72em;
+  letter-spacing: -0.01em;
+}
+
+/* 본문은 720px 이지만 다이어그램은 양옆으로 더 넓게 씁니다.
+   좁은 화면에서는 그냥 본문 폭에 맞춥니다. */
+.prose .mermaid {
+  --bleed: 130px;
+  margin-inline: calc(var(--bleed) * -1);
+}
+@media (max-width: 1040px) {
+  .prose .mermaid { --bleed: 0px; }
+}
+
 
 .post-nav {
   max-width: 760px; margin: 56px auto 0; padding-top: 26px;

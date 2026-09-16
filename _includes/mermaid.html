@@ -13,6 +13,7 @@
     // CDN 이 막히거나 실패하면 코드블록을 그대로 두고 조용히 빠진다.
     if (typeof mermaid === 'undefined') { return; }
 
+    // ```mermaid 코드블록을 mermaid 가 읽는 형태로 바꿔둔다.
     var blocks = document.querySelectorAll('pre > code.language-mermaid');
     for (var i = 0; i < blocks.length; i++) {
       var pre = blocks[i].parentNode;
@@ -23,7 +24,7 @@
     }
 
     mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,
       securityLevel: 'loose',
       look: {{ page.diagram_look | default: 'handDrawn' | jsonify }},
       handDrawnSeed: 7,
@@ -38,5 +39,20 @@
       },
       flowchart: { htmlLabels: true, padding: 14, nodeSpacing: 50, rankSpacing: 60 }
     });
+
+    // mermaid 는 SVG 에 max-width 를 직접 박아서, 좁은 화면이면 글씨가 안 보일 만큼 줄어든다.
+    // 그리기가 끝난 뒤 원래 크기로 되돌리고, 넘치면 가로로 넘겨보게 한다.
+    function keepReadableSize() {
+      document.querySelectorAll('.mermaid > svg').forEach(function (svg) {
+        var vb = svg.viewBox && svg.viewBox.baseVal;
+        if (!vb || !vb.width) { return; }
+        svg.style.maxWidth = 'none';
+        svg.style.width = Math.round(vb.width) + 'px';
+      });
+    }
+
+    mermaid.run({ nodes: document.querySelectorAll('.mermaid') })
+      .then(keepReadableSize)
+      .catch(function () { /* 하나가 실패해도 나머지 글은 그대로 읽힌다 */ });
   })();
 </script>
