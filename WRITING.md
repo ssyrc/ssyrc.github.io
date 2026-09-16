@@ -42,7 +42,7 @@ tags: [rack, power]
 | `tags` | | `[rack, power]` 처럼 목록으로 |
 | `ref` | | 한국어판·영어판을 잇는 열쇠말. 두 글에 같은 값을 넣으면 서로 링크됩니다 |
 | `cover` | | 대표 이미지 경로. 안 넣으면 주제별 기본 그림이 자동으로 붙습니다 |
-| `mermaid` | | `true` 면 다이어그램 기능을 불러옵니다 |
+| `mermaid` | | `true` 면 Mermaid 다이어그램 기능을 불러옵니다 (시나리오 그림에는 필요 없습니다) |
 | `diagram_look` | | `classic` 을 넣으면 손그림 대신 반듯한 기본 모양으로 그립니다 |
 | `math` | | `true` 면 수식 기능을 불러옵니다 |
 | `updated` | | 나중에 크게 고쳤을 때 `2026-10-01` 처럼 |
@@ -56,32 +56,55 @@ tags: [rack, power]
 
 ## 4. 다이어그램
 
-앞머리에 `mermaid: true` 를 넣고 본문에 ```` ```mermaid ```` 블록을 쓰면 됩니다.
-**손그림 스타일로 그려지는 것이 기본값입니다.**
+다이어그램은 두 가지가 있습니다.
 
-역할별 색은 아래 약속을 씁니다 — 초록은 요청하는 쪽, 빨강은 중개자, 파랑은 목적지,
-빨간 점선은 커널이 패킷을 고치는 구간.
+### 시나리오 그림 (트래픽이 흐르는 그림)
+
+**손으로 그린 SVG 를 생성기로 만들어 씁니다.** 이것이 기본값입니다.
+
+1. `tools/diagrams/spec.js` 에 존과 상자를 적습니다. 좌표는 적지 않습니다.
+2. `cd tools/diagrams && npm install && npm run build`
+3. 본문에서 불러옵니다.
+
+```liquid
+<div class="diagram">{% include diagrams/nat-port-forwarding.svg %}</div>
+```
+
+`spec.js` 한 조각:
+
+```js
+{ title: 'server side',
+  cols: [
+    [{ kind:'kernel', title:'firewall', sub:'(ex) :8000 → 192.168.0.10:8100',
+       note:'* set by the network admin' }],      // 주석은 상자 밖 바로 아래에 붙습니다
+    [{ kind:'server', title:'server', sub:'(ex) 192.168.0.10:8100' }],
+  ] }
+```
+
+- 역할별 색 — 초록 `client` 요청하는 쪽, 빨강 `proxy` 중개자, 파랑 `server` 목적지,
+  빨간 점선 `kernel` 커널이 패킷을 고치는 구간.
+- `sub` 는 **그 상자가 실제로 쓰는 주소 한 줄**. `(ex)` 를 붙이고, 문서용·사설 대역만 씁니다
+  (`203.0.113.x`, `192.168.0.x`, `10.0.0.x`, `http://my-url`).
+- `note` 는 **누가 설정하는지** 한 줄. 상자 안으로 옮기지 마세요.
+- **다이어그램 안의 글자는 전부 영어로 씁니다.** 본문이 한국어여도 그림만은 영어입니다.
+
+자세한 것은 [tools/diagrams/README.md](tools/diagrams/README.md).
+
+### 계층·분류처럼 단순한 그림
+
+앞머리에 `mermaid: true` 를 넣고 본문에 ```` ```mermaid ```` 블록을 쓰면 됩니다.
+손그림 스타일로 그려지는 것이 기본값이고, 반듯한 기본 모양이 필요하면 `diagram_look: classic`.
 
 ````
 ```mermaid
-flowchart LR
-    C["client<br/><small>sends data to 127.0.0.1:8080</small>"] --> P["proxy<br/><small>listens on 127.0.0.1:8080</small>"]
-    P --> S["server<br/><small>listens on 172.17.0.3:80</small>"]
-    class C client
-    class P proxy
-    class S server
-    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
-    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
-    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
-    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
+flowchart TD
+    A["rack"] --> B["ToR switch"]
+    A --> C["server"]
 ```
 ````
 
-- **다이어그램 안의 글자는 전부 영어로 씁니다.** 본문이 한국어여도 그림만은 영어입니다.
-  `client` / `listens on 127.0.0.1:8080` 처럼, 영어로 읽어서 자연스러운 짧은 구로.
-- 박스 이름은 짧게, 주소나 포트 같은 설명은 `<br/><small>...</small>` 로 아래에 작게.
 - **라벨 안에 `http://` 를 쓰지 마세요.** 마크다운 링크로 잘못 읽혀 글자가 깨집니다. `my-url` 처럼 씁니다.
-- 반듯한 기본 모양으로 그리고 싶은 글은 앞머리에 `diagram_look: classic` 을 넣으면 됩니다.
+- 흐름이 아닌 그림에는 역할 색을 억지로 붙이지 않습니다.
 
 ## 5. 수식
 

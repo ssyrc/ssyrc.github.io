@@ -4,7 +4,6 @@ date: 2026-09-16
 category: server-network
 tags: [proxy, port-forwarding, ssh, socks, nginx]
 cover: /assets/images/covers/proxy.svg
-mermaid: true
 ---
 
 둘 다 "내 트래픽을 다른 곳으로 보낸다"는 점은 같은데, 무엇을 기준으로 갈리는지가
@@ -26,28 +25,7 @@ mermaid: true
 
 그림으로 놓고 보면 중개하는 방식부터 다릅니다.
 
-```mermaid
-flowchart TB
-    subgraph PF["port forwarding"]
-        direction LR
-        C1["client"] --> K1["fixed rule<br/><small>8000 &rarr; IP:8100</small>"]
-        K1 --> S1["server<br/><small>always the same</small>"]
-    end
-    subgraph PX["proxy"]
-        direction LR
-        C2["client"] -->|"connection 1"| P2["proxy"]
-        P2 -->|"connection 2"| S2["server<br/><small>picked per request</small>"]
-    end
-    PF ~~~ PX
-    class C1,C2 client
-    class K1 kernel
-    class P2 proxy
-    class S1,S2 server
-    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
-    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
-    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
-    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
-```
+<div class="diagram">{% include diagrams/forwarding-vs-proxy.svg %}</div>
 
 위쪽은 연결이 **하나**입니다. 클라이언트가 연 연결이 목적지 주소만 바뀐 채
 그대로 서버까지 갑니다. 아래쪽은 연결이 **둘**이고요. 프록시가 클라이언트의 연결을
@@ -69,29 +47,7 @@ flowchart TB
 가장 기본이 되는 형태. 클라이언트는 공인 주소의 특정 포트로 접속하고,
 방화벽이나 공유기가 **설정해둔 규칙대로** 내부의 다른 IP:포트로 넘겨줍니다.
 
-```mermaid
-flowchart LR
-    subgraph LOCAL["your machine"]
-        C["client"]
-    end
-    subgraph SRV["server side"]
-        F["firewall<br/><small>8000 &rarr; internal IP:8100</small>"] --> S["server<br/><small>internal IP:8100</small>"]
-        NOTE["<small>* set by the network admin</small>"]
-    end
-    C --> F
-    C ~~~ NOTE
-    class C client
-    class F kernel
-    class S server
-    class NOTE note
-    class LOCAL,SRV zone
-    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
-    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
-    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
-    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
-    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
-    classDef note   fill:none,stroke:none,color:#64748b
-```
+<div class="diagram">{% include diagrams/nat-port-forwarding.svg %}</div>
 
 클라이언트가 할 일은 없습니다. 그냥 공인 주소로 접속할 뿐이고, 자기 패킷이 도중에
 다른 주소로 바뀌었다는 사실도 모릅니다. 규칙은 장비에 박혀 있으니
@@ -122,31 +78,7 @@ SSH 서버를 거쳐 목적지로 나갑니다.
 ※ Firefox 에는 "SOCKS v5 사용 시 DNS도 프록시 사용" 체크박스가 있습니다. 이걸 켜야 주소를 찾는 것까지 터널을 탑니다. 안 켜면 내 컴퓨터에서 DNS를 물어보게 되어, 내부망 주소가 안 풀리거나 어디에 접속하려 했는지가 밖으로 드러납니다.
 {: .note}
 
-```mermaid
-flowchart LR
-    subgraph LOCAL["your machine"]
-        C["client"] --> P["SOCKS proxy<br/><small>localhost:9999</small>"]
-        NOTE["<small>* set by client &mdash; ssh -D 9999</small>"]
-    end
-    subgraph SRV["server side"]
-        H["SSH server"] --> A["remote server A"]
-        H --> B["remote server B"]
-        H --> D["remote server C"]
-    end
-    P --> H
-    C ~~~ NOTE
-    class C client
-    class P,H proxy
-    class A,B,D server
-    class NOTE note
-    class LOCAL,SRV zone
-    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
-    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
-    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
-    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
-    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
-    classDef note   fill:none,stroke:none,color:#64748b
-```
+<div class="diagram">{% include diagrams/socks-proxy.svg %}</div>
 
 여기서 짚을 점이 세 개 있습니다.
 
@@ -213,29 +145,7 @@ reverse proxy 와는 이렇게 갈립니다.
 
 이번엔 방향이 반대입니다. **서버 쪽에** 중개자를 세워볼까요?
 
-```mermaid
-flowchart LR
-    subgraph LOCAL["your machine"]
-        C["client"]
-    end
-    subgraph SRV["server side"]
-        N["nginx<br/><small>proxy_pass</small>"] --> R["remote server<br/><small>Remote_IP:8100</small>"]
-        NOTE["<small>* set by the server operator</small>"]
-    end
-    C --> N
-    C ~~~ NOTE
-    class C client
-    class N proxy
-    class R server
-    class NOTE note
-    class LOCAL,SRV zone
-    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
-    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
-    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
-    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
-    classDef zone   fill:#fbfbfe,stroke:#94a3b8,color:#64748b,stroke-dasharray:6 6
-    classDef note   fill:none,stroke:none,color:#64748b
-```
+<div class="diagram">{% include diagrams/reverse-proxy.svg %}</div>
 
 클라이언트는 그냥 주소 하나로 접속할 뿐, 요청이 뒤에서 어떤 식으로 전달되는지
 모릅니다. 어디로 넘길지는 **프록시 서버에 적어둔 규칙**이 정합니다.
@@ -246,7 +156,7 @@ server {
     server_name my-url;
 
     location / {
-        proxy_pass http://Remote_IP:8100;
+        proxy_pass http://10.0.0.21:8100;
     }
 }
 ```

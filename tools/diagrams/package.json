@@ -1,0 +1,7 @@
+{
+  "name": "diagrams",
+  "private": true,
+  "description": "손그림 SVG 다이어그램 생성기",
+  "scripts": { "build": "node gen.js ../../_includes/diagrams" },
+  "dependencies": { "roughjs": "^4.6.6", "playwright": "^1.49.0" }
+}

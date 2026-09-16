@@ -51,6 +51,7 @@ exclude:
   - vendor
   - .github
   - _templates
+  - tools
   - assets/images/README.md
   - assets/fonts/README.md
 
