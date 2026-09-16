@@ -40,7 +40,7 @@ Mermaid 로 되돌리지 마세요. 세 번 시도했고 세 번 다 글쓴이�
 ```js
 {
   id: 'nat-port-forwarding',
-  layout: 'cols',                  // 'cols' 가로 / 'rows' 위아래 비교
+  layout: 'cols',                  // 존을 한 줄로. 여러 시나리오를 비교하려면 'compare' + `groups`
   alt: 'the client dials a public address and the firewall rewrites it',
   zones: [
     { title: 'your machine',
@@ -105,6 +105,13 @@ Mermaid 로 되돌리지 마세요. 세 번 시도했고 세 번 다 글쓴이�
 
 한 글 안의 그림들은 **같은 말을 같은 이름으로** 씁니다. `your machine` / `server side` 처럼
 존 이름을 통일하고, 어느 그림에서만 `remote server` 라고 부르는 식으로 흔들리지 않게 합니다.
+
+### 회색 점선 존은 언제나 망(location) 입니다
+
+**존은 `your machine` / `server side` 처럼 어느 망에 있는지만 뜻합니다.** 두 방식을
+비교하는 그림에서 "port forwarding" / "proxy" 같은 **시나리오 이름을 존 제목에 넣지 마세요.**
+존과 캡션은 다른 것입니다 — `layout: 'compare'` 의 `groups[].caption` 이 시나리오 이름이고,
+그 안의 `zones` 는 여전히 `your machine` / `server side` 여야 합니다.
 
 ### legend 는 쓰지 않습니다
 

@@ -19,7 +19,7 @@ Mermaid 를 쓰지 않는 이유는 [CLAUDE.md](../../CLAUDE.md) 에 적어두�
 ```js
 {
   id: 'socks-proxy',          // 파일 이름이 됩니다
-  layout: 'cols',             // 'cols' 가로 배치 / 'rows' 위아래 비교
+  layout: 'cols',             // 'cols' 존을 한 줄로 / 'compare' 여러 시나리오를 위아래로 비교
   alt: '...',                 // 스크린리더용 한 줄 설명 (영어)
   zones: [                    // 점선으로 묶는 망
     { title: 'your machine',
@@ -35,7 +35,28 @@ Mermaid 를 쓰지 않는 이유는 [CLAUDE.md](../../CLAUDE.md) 에 적어두�
 - `kind` — `client` 초록 / `proxy` 빨강 / `server` 파랑 / `kernel` 빨간 점선
 - `sub` — 상자 안 둘째 줄. 실제로 어떻게 접속하는지를 `(ex)` 를 붙여 **한 줄만** 적습니다.
 - `note` — 누가 설정하는지. **상자 밖 바로 아래**에 붙습니다.
+- `arrow` — 그 상자에서 나가는 화살표에 붙는 작은 표시(예: `①`). 두 그림을 비교할 때
+  같은 표시가 반복되면 같은 연결이 이어진다는 뜻, 표시가 바뀌면 연결이 끊기고
+  새로 열렸다는 뜻으로 씁니다. (`forwarding-vs-proxy.svg` 참고)
 - 한 열에 상자를 여러 개 넣으면 세로로 쌓이고, 앞 열에서 화살표가 갈라져 나갑니다.
+
+### `layout: 'compare'` — 시나리오를 위아래로 비교
+
+`zones` 대신 `groups` 를 씁니다. 각 그룹이 캡션 하나 + 그 안의 존들입니다.
+같은 자리(예: 두 그룹의 두 번째 존)끼리는 폭을 맞춰서 위아래가 나란히 서게 합니다.
+
+```js
+{
+  layout: 'compare',
+  groups: [
+    { caption: 'port forwarding', zones: [ /* your machine, server side */ ] },
+    { caption: 'proxy',           zones: [ /* your machine, server side */ ] },
+  ],
+}
+```
+
+캡션은 회색 점선 존이 **아닙니다.** 존은 언제나 `your machine` / `server side` 처럼
+어느 망인지를 뜻하고, 캡션은 그 위에 붙는 평범한 텍스트 한 줄입니다. 둘을 섞지 마세요.
 
 ## 배치 규칙
 
@@ -43,3 +64,5 @@ Mermaid 를 쓰지 않는 이유는 [CLAUDE.md](../../CLAUDE.md) 에 적어두�
 - 존의 크기는 그 안의 내용에 맞춥니다. 옆 존이 크다고 따라 커지지 않습니다.
 - 글자 폭은 Playwright 로 **실제 Gaegu 글꼴을 띄워 재기** 때문에, 글자가 상자 밖으로 삐져나오지 않습니다.
 - 그림은 `viewBox` 로 그려지고 `width:100%` 로 줄어듭니다. 가로 스크롤이 생길 수 없습니다.
+- `.diagram` 패널은 본문(`.prose`) 폭을 넘지 않습니다. Mermaid(`.mermaid`)만 양옆으로
+  더 넓게 나옵니다 — 둘의 CSS 규칙이 다르니 헷갈리지 마세요.

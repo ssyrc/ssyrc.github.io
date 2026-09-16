@@ -64,15 +64,23 @@ SSH 한 줄이면 만들어집니다.
 ssh -D 9999 user@ssh-server
 ```
 
-이 명령은 **내 컴퓨터에 SOCKS 프록시를 하나 띄웁니다.** 브라우저나 앱의 프록시
-설정에 `localhost:9999`를 적어주면, 그때부터 그 앱의 트래픽은 SSH 터널을 타고
-SSH 서버를 거쳐 목적지로 나갑니다.
+이 명령은 **내 컴퓨터에 SOCKS 프록시를 하나 띄웁니다.** 여기서 끝이 아닙니다.
+**터널을 만드는 것**과 **앱이 그 터널을 쓰게 만드는 것**은 서로 다른 설정이라,
+두 단계를 따로 거쳐야 합니다.
 
-그럼 그 "프록시 설정"은 어디에 적어주면 될까요?
+**1단계 — 터널 만들기**
+
+- **Windows PowerShell** — Windows 10/11 은 OpenSSH 클라이언트가 기본으로 들어 있어 위 명령을 그대로 칠 수 있습니다. `ssh -D 9999 user@ssh-server`
+- **MobaXterm** — Tools → MobaSSHTunnel → New SSH tunnel → **Dynamic port forwarding (SOCKS proxy)** 선택 → 로컬 포트 `9999`와 SSH 서버 정보를 넣고 Start. `ssh -D` 를 창으로 하는 것과 같습니다.
+{: .note}
+
+**2단계 — 앱이 그 프록시를 쓰게 설정하기**
+
+터널만 떠 있다고 트래픽이 저절로 타지는 않습니다. `localhost:9999`를 SOCKS 프록시로
+쓰라고 앱마다 따로 알려줘야 합니다.
 
 - **Firefox** — 설정 → 네트워크 설정 → **수동 프록시 설정** → SOCKS 호스트에 `localhost`, 포트에 `9999`, **SOCKS v5** 선택. 브라우저 자체 설정이라 파이어폭스만 터널을 탑니다.
 - **Chrome** — 프록시 설정 화면이 따로 없고 운영체제 설정을 그대로 따릅니다. 크롬만 따로 태우려면 실행 옵션을 주세요. `chrome --proxy-server="socks5://localhost:9999"`
-- **MobaXterm** — Tools → MobaSSHTunnel → New SSH tunnel → **Dynamic port forwarding (SOCKS proxy)** 선택 → 로컬 포트 `9999`와 SSH 서버 정보를 넣고 Start. `ssh -D` 를 창으로 하는 것과 같습니다.
 {: .note}
 
 ※ Firefox 에는 "SOCKS v5 사용 시 DNS도 프록시 사용" 체크박스가 있습니다. 이걸 켜야 주소를 찾는 것까지 터널을 탑니다. 안 켜면 내 컴퓨터에서 DNS를 물어보게 되어, 내부망 주소가 안 풀리거나 어디에 접속하려 했는지가 밖으로 드러납니다.

@@ -11,23 +11,35 @@ module.exports = {
 
   diagrams: [
     {
+      // 두 방식을 위아래로 비교합니다. 회색 점선 존은 다른 그림과 같은 뜻 —
+      // your machine / server side 입니다. "port forwarding" / "proxy" 는
+      // 존이 아니라 각 행 위에 붙는 캡션입니다.
       id: 'forwarding-vs-proxy',
-      layout: 'rows',
-      alt: 'port forwarding sends one connection through a fixed rule; a proxy terminates the connection and opens a new one per request',
-      zones: [
-        { title: 'port forwarding',
-          cols: [
-            [{ kind:'client', title:'client', sub:'(ex) 203.0.113.10:8000' }],
-            [{ kind:'kernel', title:'fixed rule', sub:'(ex) :8000 → 192.168.0.10:8100',
-               note:'* always the same destination' }],
-            [{ kind:'server', title:'server', sub:'(ex) 192.168.0.10:8100' }],
+      layout: 'compare',
+      alt: 'port forwarding relays one connection through a fixed rule to a destination that never changes; a proxy ends that connection and opens a second, separate one that can go to a different destination each time',
+      arrowColor: '#131A2E',
+      groups: [
+        { caption: 'port forwarding',
+          zones: [
+            { title: 'your machine',
+              cols: [[{ kind:'client', title:'client', sub:'(ex) 203.0.113.10:8000', arrow:'①' }]] },
+            { title: 'server side',
+              cols: [
+                [{ kind:'kernel', title:'fixed rule', sub:'(ex) :8000 → 192.168.0.10:8100',
+                   note:'* always the same destination', arrow:'①' }],
+                [{ kind:'server', title:'server', sub:'(ex) 192.168.0.10:8100' }],
+              ] },
           ] },
-        { title: 'proxy',
-          cols: [
-            [{ kind:'client', title:'client', sub:'(ex) http://my-url' }],
-            [{ kind:'proxy', title:'proxy', sub:'(ex) localhost:9999',
-               note:'* a new destination per request' }],
-            [{ kind:'server', title:'server', sub:'(ex) 10.0.0.11:80' }],
+        { caption: 'proxy',
+          zones: [
+            { title: 'your machine',
+              cols: [[{ kind:'client', title:'client', sub:'(ex) http://my-url', arrow:'①' }]] },
+            { title: 'server side',
+              cols: [
+                [{ kind:'proxy', title:'proxy', sub:'(ex) localhost:9999',
+                   note:'* a new destination per request', arrow:'②' }],
+                [{ kind:'server', title:'server', sub:'(ex) 192.168.0.10:8100' }],
+              ] },
           ] },
       ],
     },

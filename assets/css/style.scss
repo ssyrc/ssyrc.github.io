@@ -479,12 +479,14 @@ small {
   font-size: 0.8em;
 }
 
-/* 본문은 720px 이지만 다이어그램은 양옆으로 더 넓게 씁니다.
+/* 본문은 720px 이지만 Mermaid 다이어그램은 양옆으로 더 넓게 씁니다.
    화면이 좁아지면 넓히는 양이 0 까지 자동으로 줄어서, 어떤 폭에서도 넘치지 않습니다. */
-.prose .mermaid, .prose .diagram {
+.prose .mermaid {
   --bleed: clamp(0px, (100vw - 764px) / 2, 160px);
   margin-inline: calc(var(--bleed) * -1);
 }
+/* 손그림 SVG 다이어그램(.diagram)은 본문 폭을 넘지 않습니다.
+   양옆으로 넓히면 데스크탑에서 글보다 그림이 넓어져 비율이 이상해집니다. */
 
 
 .post-nav {

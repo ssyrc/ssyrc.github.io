@@ -4,7 +4,7 @@ const { chromium } = require('playwright');
 const rough = require('roughjs/bundled/rough.cjs.js');
 const spec = require('./spec.js');
 
-const F_TITLE = 16, F_SUB = 13, F_NOTE = 13, F_ZONE = 13;
+const F_TITLE = 16, F_SUB = 13, F_NOTE = 13, F_ZONE = 13, F_CAPTION = 15;
 const PADX = 18;
 const H_TWO = 60, H_ONE = 40;
 const COL_GAP = 58;              // 같은 존 안 열 간격 (= 화살표 길이)
@@ -15,19 +15,25 @@ const NOTE_GAP = 6;              // 상자 아래 - 주석 위. 바로 아래 �
 const NOTE_H = 16;
 const ARROW_GAP = 4;             // 상자 테두리와 화살표 사이
 const OUT_PAD = 10;
+const CAP_H = 22;                // compare 배치에서 캡션 한 줄이 쓰는 높이
+const GROUP_GAP = 28;            // compare 배치에서 행(비교 대상) 사이 간격
 
 const noteExtent = b => (b.note ? NOTE_GAP + NOTE_H : 0);
 
 // ---------- 1. 실제 폰트로 글자 폭 재기 ----------
 function collect() {
   const out = new Set();
-  for (const d of spec.diagrams) for (const z of d.zones) {
+  const addZone = (z) => {
     out.add(JSON.stringify([z.title, F_ZONE]));
     for (const col of z.cols) for (const b of col) {
       out.add(JSON.stringify([b.title, F_TITLE]));
       if (b.sub) out.add(JSON.stringify([b.sub, F_SUB]));
       if (b.note) out.add(JSON.stringify([b.note, F_NOTE]));
     }
+  };
+  for (const d of spec.diagrams) {
+    if (d.groups) for (const grp of d.groups) for (const z of grp.zones) addZone(z);
+    else for (const z of d.zones) addZone(z);
   }
   return [...out].map(JSON.parse);
 }
@@ -54,87 +60,134 @@ async function measure(pairs) {
 
 // ---------- 2. 배치 ----------
 // 모든 열을 하나의 중심선에 맞춥니다. 그래야 존을 건너는 화살표가 수평이 됩니다.
-function layout(d, M) {
-  const tw = (t, s) => M[s + '|' + t] || 0;
-
-  for (const z of d.zones) {
-    for (const col of z.cols) for (const b of col) {
-      b.w = Math.ceil(Math.max(tw(b.title, F_TITLE), b.sub ? tw(b.sub, F_SUB) : 0)) + PADX * 2;
-      b.h = b.sub ? H_TWO : H_ONE;
-      b.noteW = b.note ? Math.ceil(tw(b.note, F_NOTE)) : 0;
-    }
-    // 열 높이는 상자만으로 재고, 주석은 마지막 상자 아래로 흘려보냅니다.
-    z.colSpan = z.cols.map(col => col.reduce((a, b, i) =>
-      a + b.h + (i ? ROW_GAP + noteExtent(col[i - 1]) : 0), 0));
-    z.colBelow = z.cols.map(col => noteExtent(col[col.length - 1]));
-    z.colW = z.cols.map(col => Math.max(...col.map(b => b.w)));
-    z.colOuter = z.cols.map((col, i) => Math.max(z.colW[i], ...col.map(b => b.noteW)));
+function sizeZone(z, tw) {
+  for (const col of z.cols) for (const b of col) {
+    b.w = Math.ceil(Math.max(tw(b.title, F_TITLE), b.sub ? tw(b.sub, F_SUB) : 0)) + PADX * 2;
+    b.h = b.sub ? H_TWO : H_ONE;
+    b.noteW = b.note ? Math.ceil(tw(b.note, F_NOTE)) : 0;
   }
+  // 열 높이는 상자만으로 재고, 주석은 마지막 상자 아래로 흘려보냅니다.
+  z.colSpan = z.cols.map(col => col.reduce((a, b, i) =>
+    a + b.h + (i ? ROW_GAP + noteExtent(col[i - 1]) : 0), 0));
+  z.colBelow = z.cols.map(col => noteExtent(col[col.length - 1]));
+  z.colW = z.cols.map(col => Math.max(...col.map(b => b.w)));
+  z.colOuter = z.cols.map((col, i) => Math.max(z.colW[i], ...col.map(b => b.noteW)));
+}
 
-  // 행 배치(비교 그림)에서는 열 폭을 행끼리 맞춰서 위아래가 나란히 서게 합니다.
-  if (d.layout === 'rows') {
-    const n = d.zones[0].cols.length;
-    for (let i = 0; i < n; i++) {
-      const w = Math.max(...d.zones.map(z => z.colOuter[i]));
-      for (const z of d.zones) z.colOuter[i] = w;
-    }
-  }
+function sizeZoneOuter(z, tw) {
+  z.innerW = z.colOuter.reduce((a, b) => a + b, 0) + COL_GAP * (z.cols.length - 1);
+  z.w = Math.max(z.innerW, Math.ceil(tw(z.title, F_ZONE)) + 24) + Z_PAD_X * 2;
+  z.up = Math.max(...z.colSpan.map(s => s / 2)) + Z_PAD_TOP;
+  z.down = Math.max(...z.colSpan.map((s, i) => s / 2 + z.colBelow[i])) + Z_PAD_BOT;
+}
 
-  for (const z of d.zones) {
-    z.innerW = z.colOuter.reduce((a, b) => a + b, 0) + COL_GAP * (z.cols.length - 1);
-    z.w = Math.max(z.innerW, Math.ceil(tw(z.title, F_ZONE)) + 24) + Z_PAD_X * 2;
-    z.up = Math.max(...z.colSpan.map(s => s / 2)) + Z_PAD_TOP;
-    z.down = Math.max(...z.colSpan.map((s, i) => s / 2 + z.colBelow[i])) + Z_PAD_BOT;
-  }
+// 존을 가로로 늘어놓고 하나의 중심선(cy)을 공유하게 합니다. originX 부터 시작합니다.
+function placeRow(zones, originX, originY) {
+  const up = Math.max(...zones.map(z => z.up)), down = Math.max(...zones.map(z => z.down));
+  const cy = originY + up;
+  let x = originX;
+  for (const z of zones) { z.cy = cy; z.y = cy - z.up; z.h = z.up + z.down; z.x = x; x += z.w + ZONE_GAP; }
+  return { w: x - ZONE_GAP - originX, h: up + down };
+}
 
-  const groups = d.layout === 'rows' ? d.zones.map(z => [z]) : [d.zones];
-  let y = OUT_PAD, W = 0;
-  for (const grp of groups) {
-    const up = Math.max(...grp.map(z => z.up)), down = Math.max(...grp.map(z => z.down));
-    const cy = y + up;
-    let gw = grp.reduce((a, z) => a + z.w, 0) + ZONE_GAP * (grp.length - 1);
-    W = Math.max(W, gw);
-    grp.cy = cy; grp.gw = gw;
-    // 존 높이는 존마다 자기 내용에 맞춥니다. 중심선만 공유합니다.
-    for (const z of grp) { z.cy = cy; z.y = cy - z.up; z.h = z.up + z.down; }
-    y = cy + down + 24;
-  }
-  const H = y - 24 + OUT_PAD;
-
-  for (const grp of groups) {
-    let x = OUT_PAD + (W - grp.gw) / 2;
-    for (const z of grp) { z.x = x; x += z.w + ZONE_GAP; }
-  }
-  W += OUT_PAD * 2;
-
-  for (const z of d.zones) {
-    let x = z.x + (z.w - z.innerW) / 2;
-    z.cols.forEach((col, ci) => {
-      const cw = z.colOuter[ci];
-      let ty = z.cy - z.colSpan[ci] / 2;
-      col.forEach((b, bi) => {
-        b.x = Math.round(x + (cw - b.w) / 2);
-        b.y = Math.round(ty);
-        b.cx = b.x + b.w / 2; b.cy = b.y + b.h / 2;
-        ty += b.h + ROW_GAP + noteExtent(b);
-      });
-      x += cw + COL_GAP;
+function placeBoxesInZone(z) {
+  let x = z.x + (z.w - z.innerW) / 2;
+  z.cols.forEach((col, ci) => {
+    const cw = z.colOuter[ci];
+    let ty = z.cy - z.colSpan[ci] / 2;
+    col.forEach((b) => {
+      b.x = Math.round(x + (cw - b.w) / 2);
+      b.y = Math.round(ty);
+      b.cx = b.x + b.w / 2; b.cy = b.y + b.h / 2;
+      ty += b.h + ROW_GAP + noteExtent(b);
     });
-  }
+    x += cw + COL_GAP;
+  });
+}
 
+// 상자의 arrow 필드는 "이 상자에서 나가는 화살표에 붙일 표시"입니다.
+// 두 다이어그램을 비교할 때 같은 표시가 반복되면 같은 연결이 이어진다는 뜻,
+// 표시가 바뀌면 연결이 끊기고 새로 열렸다는 뜻으로 씁니다.
+function arrowsWithinZone(z) {
   const arrows = [];
   const push = (a, b) => arrows.push({
-    x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy });
-  for (const z of d.zones) for (let i = 0; i < z.cols.length - 1; i++) {
+    x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy, label: a.arrow });
+  for (let i = 0; i < z.cols.length - 1; i++) {
     const from = z.cols[i], to = z.cols[i + 1];
     if (from.length === 1) for (const t of to) push(from[0], t);
     else from.forEach((f, k) => push(f, to[Math.min(k, to.length - 1)]));
   }
-  if (d.layout !== 'rows') for (let i = 0; i < d.zones.length - 1; i++) {
-    const a = d.zones[i].cols[d.zones[i].cols.length - 1];
-    push(a[a.length - 1], d.zones[i + 1].cols[0][0]);
+  return arrows;
+}
+
+function arrowBetweenZones(za, zb) {
+  const a = za.cols[za.cols.length - 1][za.cols[za.cols.length - 1].length - 1];
+  const b = zb.cols[0][0];
+  return { x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy, label: a.arrow };
+}
+
+function layout(d, M) {
+  const tw = (t, s) => M[s + '|' + t] || 0;
+
+  // 비교 그림 — 존을 두 개 이상의 "행"(예: port forwarding / proxy)으로 나눠
+  // 위아래로 쌓습니다. 각 행은 자체적으로 your machine / server side 존을 가집니다.
+  if (d.layout === 'compare') {
+    for (const grp of d.groups) for (const z of grp.zones) { sizeZone(z, tw); sizeZoneOuter(z, tw); }
+
+    // 같은 자리(예: 두 행의 "server side")끼리 폭을 맞춰서 위아래가 나란히 서게 합니다.
+    const n = d.groups[0].zones.length;
+    for (let i = 0; i < n; i++) {
+      const w = Math.max(...d.groups.map(g => g.zones[i].w));
+      for (const g of d.groups) g.zones[i].w = w;
+      const cols = d.groups[0].zones[i].cols.length;
+      for (let c = 0; c < cols; c++) {
+        const cw = Math.max(...d.groups.map(g => g.zones[i].colOuter[c]));
+        for (const g of d.groups) g.zones[i].colOuter[c] = cw;
+      }
+      for (const g of d.groups) {
+        const z = g.zones[i];
+        z.innerW = z.colOuter.reduce((a, b) => a + b, 0) + COL_GAP * (z.cols.length - 1);
+      }
+    }
+
+    let y = OUT_PAD, W = 0;
+    for (const grp of d.groups) {
+      grp._capTop = y;
+      y += CAP_H;
+      const row = placeRow(grp.zones, 0, y);
+      grp._w = row.w;
+      W = Math.max(W, row.w);
+      y += row.h + GROUP_GAP;
+    }
+    const H = y - GROUP_GAP + OUT_PAD;
+
+    const allZones = [], allArrows = [];
+    for (const grp of d.groups) {
+      const xOff = OUT_PAD + (W - grp._w) / 2;
+      for (const z of grp.zones) z.x += xOff;
+      grp._capX = xOff;
+      for (const z of grp.zones) placeBoxesInZone(z);
+      for (const z of grp.zones) allArrows.push(...arrowsWithinZone(z));
+      for (let i = 0; i < grp.zones.length - 1; i++) allArrows.push(arrowBetweenZones(grp.zones[i], grp.zones[i + 1]));
+      allZones.push(...grp.zones);
+    }
+    d.zones = allZones;
+    d.arrows = allArrows;
+    d.W = Math.ceil(W + OUT_PAD * 2);
+    d.H = Math.ceil(H);
+    return d;
   }
-  d.arrows = arrows; d.W = Math.ceil(W); d.H = Math.ceil(H);
+
+  // 가로로 한 줄 — 존을 나란히 놓고 사이사이를 화살표로 잇습니다.
+  for (const z of d.zones) { sizeZone(z, tw); sizeZoneOuter(z, tw); }
+  const row = placeRow(d.zones, OUT_PAD, OUT_PAD);
+  for (const z of d.zones) placeBoxesInZone(z);
+  const arrows = [];
+  for (const z of d.zones) arrows.push(...arrowsWithinZone(z));
+  for (let i = 0; i < d.zones.length - 1; i++) arrows.push(arrowBetweenZones(d.zones[i], d.zones[i + 1]));
+  d.arrows = arrows;
+  d.W = Math.ceil(row.w + OUT_PAD * 2);
+  d.H = Math.ceil(row.h + OUT_PAD * 2);
   return d;
 }
 
@@ -158,8 +211,9 @@ function paths(drawable, dash) {
 }
 
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const text = (x, y, s, size, fill) =>
-  '  <text x="' + x + '" y="' + y + '" font-size="' + size + '" fill="' + fill + '">' + esc(s) + '</text>';
+const text = (x, y, s, size, fill, anchor) =>
+  '  <text x="' + x + '" y="' + y + '" font-size="' + size + '" fill="' + fill + '"' +
+  (anchor ? ' text-anchor="' + anchor + '"' : '') + '>' + esc(s) + '</text>';
 
 function arrow(a, color) {
   const out = [paths(g.line(a.x1, a.y1, a.x2, a.y2,
@@ -175,6 +229,9 @@ function arrow(a, color) {
 
 function render(d) {
   const o = [];
+  if (d.groups) for (const grp of d.groups) {
+    o.push(text(grp._capX, grp._capTop + 16, grp.caption, F_CAPTION, '#475569', 'start'));
+  }
   for (const z of d.zones) {
     o.push(paths(g.rectangle(z.x, z.y, z.w, z.h, {
       seed: nextSeed(), roughness: 0.9, bowing: 0.6, stroke: '#94a3b8', strokeWidth: 1.3 }), [9, 7]));
@@ -193,7 +250,9 @@ function render(d) {
     }
     if (b.note) o.push(text(b.cx, b.y + b.h + NOTE_GAP + 12, b.note, F_NOTE, '#64748b'));
   }
-  for (const a of d.arrows) o.push(arrow(a, '#dc2626'));
+  for (const a of d.arrows) o.push(arrow(a, d.arrowColor || '#dc2626'));
+  // 화살표 표시(예: ①②) — 같은 연결이 이어지는지, 새 연결이 열리는지 보여줍니다.
+  for (const a of d.arrows) if (a.label) o.push(text((a.x1 + a.x2) / 2, Math.min(a.y1, a.y2) - 9, a.label, F_NOTE, '#475569'));
 
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + d.W + ' ' + d.H +
     '" width="' + d.W + '" height="' + d.H + '" role="img" aria-label="' + esc(d.alt) +
