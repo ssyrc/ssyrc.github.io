@@ -110,11 +110,14 @@ function placeBoxesInZone(z) {
 // 앞 열이 상자 하나면 뒤 열 전부로 갈라지고, 여럿이면 같은 자리끼리 짝지어집니다.
 // `end: true` 인 상자는 거기서 끝나는 갈래라, 나가는 화살표를 그리지 않습니다.
 // 상자의 `arrow` 는 그 상자에서 나가는 화살표에 붙일 표시입니다 (같은 표시 = 같은 연결).
+// `arrowDash: true` 면 점선 화살표가 됩니다 — 평상시에는 흐르지 않고
+// 어떤 조건에서만 흐르는 길(예: 정전 때만 쓰는 UPS 라인)에 씁니다.
 function connect(from, to) {
   const arrows = [];
   const push = (a, b) => {
     if (a.end) return;
-    arrows.push({ x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy, label: a.arrow });
+    arrows.push({ x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy,
+                  label: a.arrow, dash: a.arrowDash ? [7, 5] : null });
   };
   if (from.length === 1) for (const t of to) push(from[0], t);
   else from.forEach((f, k) => push(f, to[Math.min(k, to.length - 1)]));
@@ -221,8 +224,9 @@ const text = (x, y, s, size, fill, anchor) =>
   (anchor ? ' text-anchor="' + anchor + '"' : '') + '>' + esc(s) + '</text>';
 
 function arrow(a, color) {
+  // 몸통만 점선으로 하고 화살촉은 실선으로 둡니다 — 점선이면 촉이 끊겨 보입니다.
   const out = [paths(g.line(a.x1, a.y1, a.x2, a.y2,
-    { seed: nextSeed(), roughness: 0.7, bowing: 0.3, stroke: color, strokeWidth: 1.7 }))];
+    { seed: nextSeed(), roughness: 0.7, bowing: 0.3, stroke: color, strokeWidth: 1.7 }), a.dash)];
   const ang = Math.atan2(a.y2 - a.y1, a.x2 - a.x1), L = 9, S = 0.42;
   for (const s of [1, -1]) {
     const t = ang + Math.PI + s * S;

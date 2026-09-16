@@ -104,29 +104,32 @@ module.exports = {
     // kernel(빨간 점선)=자동으로, 눈에 안 띄게 동작하는 장치, server(파랑)=최종 목적지.
     // -------------------------------------------------------------------
 
-    // 1. 전력이 지나가는 길 — ATS 에서 두 갈래로 갈립니다.
-    //    IT 부하만 UPS 를 타고, 냉각 같은 기계 부하는 UPS 를 타지 않습니다.
+    // 1. 전력이 지나가는 길 — 평상시 흐르는 길(실선)과 정전 때만 흐르는 길(점선)을
+    //    갈라 그립니다. UPS 는 평상시 부하를 지고 있지 않고 대기만 합니다.
+    //    그리고 랙에서 끊지 않고 서버 PSU 까지 이어줍니다.
     {
       id: 'power-path',
       layout: 'cols',
-      alt: 'utility power and a standby generator feed a transfer switch, which splits into the IT load through the UPS and the cooling load that bypasses it',
+      alt: 'day to day the utility feeds the switchboard, the rack PDU and then the server PSU; the UPS sits on standby and only carries the load when that feed drops',
       zones: [
         { title: 'power source',
           cols: [
             [
-              { kind:'client', title:'utility grid', sub:'primary power' },
-              { kind:'client', title:'generator', sub:'standby' },
+              { kind:'client', title:'utility grid', sub:'everyday source' },
+              { kind:'client', title:'generator', sub:'starts on outage', arrowDash: true },
             ],
-            [{ kind:'kernel', title:'ATS', sub:'picks the source' }],
+            [{ kind:'kernel', title:'ATS', sub:'picks the live source' }],
           ] },
         { title: 'data center',
           cols: [
             [
-              { kind:'proxy', title:'UPS', sub:'battery backup' },
-              { kind:'server', title:'cooling', sub:'chillers, fans', end: true,
-                note:'* no UPS on this side' },
+              { kind:'kernel', title:'switchboard', sub:'the everyday path',
+                note:'* carries the load all day' },
+              { kind:'proxy', title:'UPS', sub:'battery on standby', arrowDash: true,
+                note:'* steps in only when the feed drops' },
             ],
-            [{ kind:'server', title:'rack', sub:'the IT load' }],
+            [{ kind:'proxy', title:'rack PDU', sub:'outlets in the rack' }],
+            [{ kind:'server', title:'server PSU', sub:'AC \u2192 DC' }],
           ] },
       ],
     },
