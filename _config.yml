@@ -22,6 +22,10 @@ markdown: kramdown
 highlighter: rouge
 permalink: /:year/:month/:day/:title/
 timezone: Asia/Seoul
+
+# 방문자 집계 (GoatCounter). 계정 이름만 적으면 됩니다 — https://<이름>.goatcounter.com
+# 비워두면 집계 스크립트가 아예 실리지 않습니다.
+goatcounter: ssyrc
 excerpt_separator: "<!--more-->"
 
 kramdown:

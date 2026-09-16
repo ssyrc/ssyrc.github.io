@@ -1,0 +1,14 @@
+{% comment %}
+  방문자 집계 — GoatCounter.
+  `_config.yml` 의 `goatcounter` 에 계정 이름을 적으면 켜집니다. 비우면 꺼집니다.
+
+  실제로 배포된 사이트에서만 실립니다. GitHub Pages 는 빌드할 때 JEKYLL_ENV=production
+  을 주지만, 로컬 `jekyll serve` 는 development 라서 미리 보는 동안의 방문은
+  집계에 섞이지 않습니다.
+
+  쿠키를 쓰지 않고 개인을 식별하는 값도 남기지 않아서, 동의 배너가 필요 없습니다.
+{% endcomment %}
+{% if site.goatcounter and jekyll.environment == "production" %}
+<script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+{% endif %}

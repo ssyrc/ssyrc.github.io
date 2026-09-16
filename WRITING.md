@@ -184,3 +184,13 @@ bundle exec jekyll serve --drafts
 
 커밋 전에 빌드가 깨지는지만 확인하고 싶다면 푸시 후 Actions 탭의
 **Build check** 결과를 보면 됩니다. 초록색이면 사이트도 정상입니다.
+
+## 방문자 집계
+
+[GoatCounter](https://ssyrc.goatcounter.com) 로 집계합니다. 글쓴이가 따로 할 일은 없습니다.
+
+- 통계는 <https://ssyrc.goatcounter.com> 에서 봅니다. 글별 조회수와 유입 경로가 나옵니다.
+- **로컬에서 미리 보는 동안의 방문은 집계되지 않습니다.** 실제로 배포된 사이트
+  (`JEKYLL_ENV=production`)에서만 스크립트가 실립니다.
+- 쿠키를 쓰지 않고 개인을 식별하는 값도 남기지 않습니다. 동의 배너가 필요 없습니다.
+- 끄고 싶으면 `_config.yml` 의 `goatcounter:` 값을 지우면 됩니다.
