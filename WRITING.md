@@ -43,6 +43,7 @@ tags: [rack, power]
 | `ref` | | 한국어판·영어판을 잇는 열쇠말. 두 글에 같은 값을 넣으면 서로 링크됩니다 |
 | `cover` | | 대표 이미지 경로. 안 넣으면 주제별 기본 그림이 자동으로 붙습니다 |
 | `mermaid` | | `true` 면 다이어그램 기능을 불러옵니다 |
+| `diagram_look` | | `classic` 을 넣으면 손그림 대신 반듯한 기본 모양으로 그립니다 |
 | `math` | | `true` 면 수식 기능을 불러옵니다 |
 | `updated` | | 나중에 크게 고쳤을 때 `2026-10-01` 처럼 |
 
@@ -55,15 +56,30 @@ tags: [rack, power]
 
 ## 4. 다이어그램
 
-앞머리에 `mermaid: true` 를 넣고, 본문에 이렇게 씁니다.
+앞머리에 `mermaid: true` 를 넣고 본문에 ```` ```mermaid ```` 블록을 쓰면 됩니다.
+**손그림 스타일로 그려지는 것이 기본값입니다.**
+
+역할별 색은 아래 약속을 씁니다 — 초록은 요청하는 쪽, 빨강은 중개자, 파랑은 목적지,
+빨간 점선은 커널이 패킷을 고치는 구간.
 
 ````
 ```mermaid
-graph LR
-    A[클라이언트] --> B[ToR 스위치]
-    B --> C[스파인]
+flowchart LR
+    C["client<br/><small>127.0.0.1:8080 으로 보냄</small>"] --> P["proxy<br/><small>127.0.0.1:8080 에서 대기</small>"]
+    P --> S["server<br/><small>172.17.0.3:80 에서 대기</small>"]
+    class C client
+    class P proxy
+    class S server
+    classDef client fill:#ecfdf5,stroke:#15803d,color:#15803d
+    classDef proxy  fill:#fef2f2,stroke:#dc2626,color:#dc2626
+    classDef server fill:#eff6ff,stroke:#1d4ed8,color:#1d4ed8
+    classDef kernel fill:#ffffff,stroke:#dc2626,color:#64748b,stroke-dasharray:6 5
 ```
 ````
+
+- 박스 이름은 짧게, 주소나 포트 같은 설명은 `<br/><small>...</small>` 로 아래에 작게.
+- **라벨 안에 `http://` 를 쓰지 마세요.** 마크다운 링크로 잘못 읽혀 글자가 깨집니다. `my-url` 처럼 씁니다.
+- 반듯한 기본 모양으로 그리고 싶은 글은 앞머리에 `diagram_look: classic` 을 넣으면 됩니다.
 
 ## 5. 수식
 

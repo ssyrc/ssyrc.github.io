@@ -47,6 +47,7 @@ exclude:
   - Gemfile.lock
   - README.md
   - WRITING.md
+  - CLAUDE.md
   - vendor
   - .github
   - _templates
@@ -69,6 +70,19 @@ defaults:
       permalink: /ko/:year/:month/:day/:title/
   - scope:
       path: "_posts/en"
+      type: posts
+    values:
+      lang: en
+      permalink: /en/:year/:month/:day/:title/
+  # 초안도 발행 글과 같은 규칙을 따르게 해서, _posts 로 옮길 때 달라지는 게 없도록 합니다.
+  - scope:
+      path: "_drafts/ko"
+      type: posts
+    values:
+      lang: ko
+      permalink: /ko/:year/:month/:day/:title/
+  - scope:
+      path: "_drafts/en"
       type: posts
     values:
       lang: en

@@ -1,9 +1,18 @@
-{% comment %} 다이어그램: 글 앞머리에 mermaid: true 를 넣은 글에서만 불러옵니다. {% endcomment %}
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+{% comment %}
+  다이어그램: 글 앞머리에 mermaid: true 를 넣은 글에서만 불러옵니다.
+
+  기본은 손그림(handDrawn) 모양입니다.
+  반듯한 기본 모양으로 그리고 싶은 글은 앞머리에 diagram_look: classic 을 넣으세요.
+
+  다이어그램 원본은 저장소에 직접 쓴 것이라 securityLevel 은 loose 로 둡니다.
+  (라벨 안에서 <br/>, <small> 같은 태그를 쓰기 위함)
+{% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
 <script>
   (function () {
-    // CDN 이 막혀 있거나 실패하면 코드블록을 그대로 두고 조용히 빠진다.
+    // CDN 이 막히거나 실패하면 코드블록을 그대로 두고 조용히 빠진다.
     if (typeof mermaid === 'undefined') { return; }
+
     var blocks = document.querySelectorAll('pre > code.language-mermaid');
     for (var i = 0; i < blocks.length; i++) {
       var pre = blocks[i].parentNode;
@@ -12,7 +21,22 @@
       holder.textContent = blocks[i].textContent;
       pre.parentNode.replaceChild(holder, pre);
     }
-    var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'default', fontFamily: 'inherit' });
+
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: 'loose',
+      look: {{ page.diagram_look | default: 'handDrawn' | jsonify }},
+      handDrawnSeed: 7,
+      theme: 'base',
+      fontFamily: "'Gaegu', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif",
+      themeVariables: {
+        fontSize: '16px',
+        lineColor: '#dc2626',
+        primaryColor: '#f8fafc',
+        primaryBorderColor: '#64748b',
+        primaryTextColor: '#334155'
+      },
+      flowchart: { htmlLabels: true, padding: 14, nodeSpacing: 50, rankSpacing: 60 }
+    });
   })();
 </script>

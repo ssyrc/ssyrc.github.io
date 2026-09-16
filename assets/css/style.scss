@@ -417,7 +417,29 @@ button { font: inherit; color: inherit; }
 .prose th, .prose td { border-bottom: 1px solid var(--line); padding: .6rem .9rem; text-align: left; }
 .prose th { color: var(--ink-2); font-weight: 650; background: var(--bg-soft); }
 
-.mermaid { margin: 1.9rem 0; text-align: center; overflow-x: auto; }
+/* ※ 부연 설명 — 본문보다 작고 흐리게. 마크다운에서 문단 아래 {: .note} 로 지정합니다. */
+.prose .note {
+  margin: -0.4rem 0 1.4rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--line);
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--ink-3);
+}
+.prose .note strong { color: var(--ink-2); }
+.prose .note code { font-size: 0.85em; }
+
+/* 다이어그램은 라이트/다크 어느 쪽에서든 흰 판 위에 올려서 색이 일정하게 보이도록 합니다. */
+.mermaid {
+  margin: 1.9rem 0;
+  padding: 20px 16px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  text-align: center;
+  overflow-x: auto;
+}
+.mermaid svg { max-width: 100%; height: auto; }
 
 .post-nav {
   max-width: 760px; margin: 56px auto 0; padding-top: 26px;
