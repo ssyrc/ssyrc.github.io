@@ -104,85 +104,147 @@ module.exports = {
     // kernel(빨간 점선)=자동으로, 눈에 안 띄게 동작하는 장치, server(파랑)=최종 목적지.
     // -------------------------------------------------------------------
 
-    // 1. 전력이 지나가는 길 — 전력실 PDU 와 랙 PDU 는 서로 다른 장비입니다.
-    //    부하는 평상시에도 UPS 를 통과합니다. 평소에 정말로 꺼져 있는 것은 발전기뿐입니다.
+    // 1. 건물 전원 → UPS → 서버룸. A/B 두 계통을 세로로 흘립니다.
+    //    상용전원 인입은 하나여도 됩니다 — 티어를 가르는 것은 인입 개수가 아니라,
+    //    상용전원이 없을 때 현장 발전설비로 버틸 수 있느냐입니다.
     {
-      id: 'power-path',
-      layout: 'cols',
-      alt: 'the utility feeds a transfer switch, then the UPS and the room PDU in the electrical room, then the rack PDU and the server PSU; the generator stays shut down until the utility drops',
+      id: 'power-building',
+      layout: 'flow',
+      alt: 'one utility intake feeds two transformers; each transfer switch also takes its own generator, and each side runs its own low voltage switchboard, UPS with batteries, UPS output switchboard and server room panelboard, with essential cooling fed from the switchboard ahead of the UPS',
       zones: [
-        { title: 'power source',
+        { title: 'incoming power',
           cols: [
             [
-              { kind:'client', title:'utility grid', sub:'everyday source' },
-              { kind:'client', title:'generator', sub:'off until needed', arrowDash: true,
-                note:'* starts only on an outage' },
+              { kind:'client', title:'fuel system A', sub:'tank + pumps', to:['ga'] },
+              { kind:'client', title:'utility intake', sub:'one feed is enough', to:['ta','tb'] },
+              { kind:'client', title:'fuel system B', sub:'tank + pumps', to:['gb'] },
             ],
-            [{ kind:'kernel', title:'ATS', sub:'picks the source' }],
+            [
+              { kind:'client', id:'ga', title:'generator A', sub:'off until needed', to:['aa'], arrowDash: true },
+              { kind:'kernel', id:'ta', title:'transformer A', sub:'steps voltage down', to:['aa'] },
+              { kind:'kernel', id:'tb', title:'transformer B', sub:'steps voltage down', to:['ab'] },
+              { kind:'client', id:'gb', title:'generator B', sub:'off until needed', to:['ab'], arrowDash: true },
+            ],
+            [
+              { kind:'kernel', id:'aa', title:'transfer switch A', sub:'utility or generator', to:['la'] },
+              { kind:'kernel', id:'ab', title:'transfer switch B', sub:'utility or generator', to:['lb'] },
+            ],
           ] },
         { title: 'electrical room',
           cols: [
-            [{ kind:'proxy', title:'UPS', sub:'batteries inside',
-               note:'* the load runs through it' }],
-            [{ kind:'proxy', title:'PDU', sub:'branch circuits' }],
+            [
+              { kind:'proxy', id:'la', title:'LV switchboard A', sub:'low voltage side', to:['ua','ca'] },
+              { kind:'proxy', id:'lb', title:'LV switchboard B', sub:'low voltage side', to:['ub','cb'] },
+            ],
+            [
+              { kind:'server', id:'ca', title:'cooling power A', sub:'not on the UPS', end: true },
+              { kind:'proxy', id:'ua', title:'UPS A', sub:'battery A inside', to:['da'] },
+              { kind:'proxy', id:'ub', title:'UPS B', sub:'battery B inside', to:['db'] },
+              { kind:'server', id:'cb', title:'cooling power B', sub:'not on the UPS', end: true },
+            ],
+            [
+              { kind:'proxy', id:'da', title:'UPS output board A', sub:'clean power only', to:['ra'] },
+              { kind:'proxy', id:'db', title:'UPS output board B', sub:'clean power only', to:['rb'] },
+            ],
+          ] },
+        { title: 'server room',
+          cols: [
+            [
+              { kind:'proxy', id:'ra', title:'room panelboard A', sub:'feeds the rack rows', end: true,
+                note:'* A alone must carry the whole load' },
+              { kind:'proxy', id:'rb', title:'room panelboard B', sub:'feeds the rack rows', end: true },
+            ],
+          ] },
+      ],
+    },
+
+    // 2. 서버룸 분전반 → 버스덕트 → 탭박스 → 랙 PDU → 서버 PSU.
+    //    A/B 가 랙까지 갈라진 채로 이어지는 것이 핵심입니다.
+    {
+      id: 'power-rack',
+      layout: 'flow',
+      alt: 'each room panelboard runs its own busway, tap box, rack PDU and PSU group, and the two PSU groups meet only inside one server',
+      zones: [
+        { title: 'server room',
+          cols: [
+            [
+              { kind:'proxy', title:'room panelboard A', sub:'feeds the rack rows' },
+              { kind:'proxy', title:'room panelboard B', sub:'feeds the rack rows' },
+            ],
+            [
+              { kind:'kernel', title:'busway A', sub:'conductor rail' },
+              { kind:'kernel', title:'busway B', sub:'conductor rail' },
+            ],
+            [
+              { kind:'proxy', title:'tap box A', sub:'branch breaker' },
+              { kind:'proxy', title:'tap box B', sub:'branch breaker' },
+            ],
           ] },
         { title: 'rack',
           cols: [
-            [{ kind:'proxy', title:'rack PDU', sub:'rack outlets' }],
-            [{ kind:'server', title:'server PSU', sub:'AC \u2192 DC' }],
+            [
+              { kind:'proxy', title:'rack PDU A', sub:'outlets, feed A' },
+              { kind:'proxy', title:'rack PDU B', sub:'outlets, feed B' },
+            ],
+            [
+              { kind:'server', id:'pa', title:'PSU group A', sub:'one or more PSUs', to:['sv'] },
+              { kind:'server', id:'pb', title:'PSU group B', sub:'one or more PSUs', to:['sv'] },
+            ],
+            [{ kind:'server', id:'sv', title:'server power board', sub:'one machine, two cords',
+               note:'* group B alone must hold the full load' }],
+            [{ kind:'server', title:'CPU / GPU / memory', sub:'the actual work' }],
           ] },
       ],
     },
 
-    // 1-b. UPS 두 방식 — 부하가 UPS 를 통과하느냐, 아니면 UPS 가 비켜 있다가 끼어드느냐.
+    // 3. 정전 한 장면 — 평상시 / 정전 직후 / 발전기 인수.
+    //    UPS 그림에는 비상발전기를 언제나 같이 넣습니다.
     {
-      id: 'ups-topology',
+      id: 'ups-generator',
       layout: 'compare',
-      alt: 'in a double conversion UPS the load always runs through the UPS, so there is no gap; in a standby UPS the feed passes straight to the load and the UPS only takes over when it drops',
+      alt: 'normally the utility runs through the UPS to the server while the generator is off; the instant the utility drops the battery carries the load and the generator starts; once it is up the generator feeds the UPS and the battery recharges',
       groups: [
-        { caption: 'double conversion (online)',
+        { caption: 'everyday',
           zones: [
-            { title: 'everyday path',
+            { title: 'who is carrying the load',
               cols: [
-                [{ kind:'client', title:'utility grid', sub:'incoming feed' }],
-                [{ kind:'proxy', title:'UPS', sub:'always in the path',
-                   note:'* converts AC \u2192 DC \u2192 AC all day' }],
-                [{ kind:'server', title:'server', sub:'never sees a gap' }],
-              ] },
-          ] },
-        { caption: 'standby / line-interactive',
-          zones: [
-            { title: 'everyday path',
-              cols: [
-                [{ kind:'client', title:'utility grid', sub:'incoming feed' }],
                 [
-                  { kind:'kernel', title:'transfer switch', sub:'passes it straight through' },
-                  { kind:'proxy', title:'UPS', sub:'waits on battery', arrowDash: true,
-                    note:'* takes over when the feed drops' },
+                  { kind:'client', title:'utility', sub:'live' },
+                  { kind:'client', title:'generator', sub:'shut down', end: true },
                 ],
-                [{ kind:'server', title:'server', sub:'brief gap on transfer' }],
+                [{ kind:'proxy', title:'UPS', sub:'battery full, passing through' }],
+                [{ kind:'server', title:'server', sub:'running' }],
+              ] },
+          ] },
+        { caption: 'the moment it drops',
+          zones: [
+            { title: 'who is carrying the load',
+              cols: [
+                [
+                  { kind:'client', title:'utility', sub:'dead', end: true },
+                  { kind:'client', title:'generator', sub:'cranking', end: true,
+                    note:'* takes tens of seconds' },
+                ],
+                [{ kind:'proxy', title:'UPS', sub:'battery carries it' }],
+                [{ kind:'server', title:'server', sub:'never notices' }],
+              ] },
+          ] },
+        { caption: 'generator up',
+          zones: [
+            { title: 'who is carrying the load',
+              cols: [
+                [
+                  { kind:'client', title:'utility', sub:'still dead', end: true },
+                  { kind:'client', title:'generator', sub:'carrying the load' },
+                ],
+                [{ kind:'proxy', title:'UPS', sub:'recharging the battery' }],
+                [{ kind:'server', title:'server', sub:'running' }],
               ] },
           ] },
       ],
     },
 
-    // 2. 정전에도 서버가 안 꺼지는 이유
-    {
-      id: 'power-outage-timeline',
-      layout: 'cols',
-      alt: 'when the grid drops, the UPS battery covers the first seconds until the generator comes online',
-      zones: [
-        { title: 'power outage timeline',
-          cols: [
-            [{ kind:'kernel', title:'grid drops', sub:'outage detected' }],
-            [{ kind:'proxy', title:'UPS battery', sub:'covers the first seconds',
-               note:'* bridges the gap while the generator starts' }],
-            [{ kind:'server', title:'generator running', sub:'ATS switches the load over' }],
-          ] },
-      ],
-    },
-
-    // 3. 버스덕트 · TAP BOX · 리셉터클 — 랙까지 전기를 끌어오는 마지막 구간
+    // 4. 버스덕트 · 탭박스 · 리셉터클 (한 계통만 확대해서 봅니다)
     {
       id: 'busway-tapbox',
       layout: 'cols',
@@ -191,8 +253,8 @@ module.exports = {
         { title: 'above the rack',
           cols: [
             [{ kind:'kernel', title:'busway', sub:'conductor rail' }],
-            [{ kind:'proxy', title:'TAP BOX', sub:'taps off one circuit',
-               note:'* breaker sits in here' }],
+            [{ kind:'proxy', title:'tap box', sub:'taps off one circuit',
+               note:'* branch breaker sits in here' }],
             [{ kind:'proxy', title:'receptacle', sub:'the outlet itself' }],
           ] },
         { title: 'in the rack',
@@ -202,11 +264,11 @@ module.exports = {
       ],
     },
 
-    // 4. 랙 PDU · 서버 PSU — 랙 안에서 서버까지
+    // 5. 랙 PDU · 서버 PSU (한 랙 안)
     {
       id: 'psu-redundancy',
       layout: 'cols',
-      alt: 'two separate rack PDU feeds each power their own PSU, and either PSU alone can keep the server running',
+      alt: 'two separate rack PDU feeds each power their own PSU group, and either group alone can keep the server running',
       zones: [
         { title: 'inside the rack',
           cols: [
@@ -215,41 +277,11 @@ module.exports = {
               { kind:'proxy', title:'rack PDU B', sub:'feed B' },
             ],
             [
-              { kind:'server', title:'PSU 1', sub:'AC \u2192 DC' },
-              { kind:'server', title:'PSU 2', sub:'AC \u2192 DC' },
+              { kind:'server', title:'PSU group A', sub:'AC \u2192 DC' },
+              { kind:'server', title:'PSU group B', sub:'AC \u2192 DC' },
             ],
-            [{ kind:'server', title:'server board', sub:'either PSU alone is enough',
-               note:'* N+1 \u2014 one PSU can fail without downtime' }],
-          ] },
-      ],
-    },
-
-    // 5. 이중화 — 2N. 인입부터 랙 PDU 까지 두 벌이 각각 서버의 PSU 한 쪽씩을 먹입니다.
-    {
-      id: 'redundancy-2n',
-      layout: 'cols',
-      alt: 'in a 2N design two fully independent feeds each run their own UPS and rack PDU into one of the two power supplies of the same dual corded server',
-      zones: [
-        { title: '2N \u2014 two independent paths',
-          cols: [
-            [
-              { kind:'client', title:'feed A', sub:'utility + generator' },
-              { kind:'client', title:'feed B', sub:'utility + generator' },
-            ],
-            [
-              { kind:'proxy', title:'UPS A', sub:'own batteries' },
-              { kind:'proxy', title:'UPS B', sub:'own batteries' },
-            ],
-            [
-              { kind:'proxy', title:'rack PDU A', sub:'own breaker' },
-              { kind:'proxy', title:'rack PDU B', sub:'own breaker' },
-            ],
-            [
-              { kind:'server', title:'PSU 1', sub:'AC \u2192 DC' },
-              { kind:'server', title:'PSU 2', sub:'AC \u2192 DC' },
-            ],
-            [{ kind:'server', title:'server', sub:'dual corded',
-               note:'* a whole path can die and nothing stops' }],
+            [{ kind:'server', title:'server board', sub:'either group alone is enough',
+               note:'* size each group for the full load' }],
           ] },
       ],
     },

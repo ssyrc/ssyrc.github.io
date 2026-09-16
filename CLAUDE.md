@@ -70,6 +70,31 @@ Mermaid 로 되돌리지 마세요. 세 번 시도했고 세 번 다 글쓴이�
 | 존 | 회색 점선 | 서로 다른 망 (`your machine`, `server side`) |
 | 주석 | 테두리 없는 회색 글씨 | 상자 밖 바로 아래 `* 누가 설정하는가` 한 줄 |
 
+### 긴 사슬은 세로로 흘립니다 (`layout: 'flow'`)
+
+수전 → 변압기 → 절체 → 배전반 → UPS → 분전반처럼 **단계가 대여섯을 넘는 그림**은
+가로로 늘어놓으면 폭이 터지고, 휴대폰에서 글씨가 읽을 수 없게 작아집니다.
+이런 그림은 `layout: 'flow'` 로 **위에서 아래로** 흘립니다.
+
+- `cols` 가 **단(stage)** 이 되어 세로로 쌓이고, 한 단 안의 상자는 가로로 늘어섭니다.
+- 존은 위아래로 쌓이며, 각각 점선 상자와 제목을 가집니다.
+- 화살표는 상자 아래에서 다음 상자 위로 내려갑니다.
+- 주석은 그대로 **상자 바로 아래**에 붙고, 그만큼 다음 단이 밀려납니다.
+
+갈래가 많으면 자리 순서로 짝짓는 기본 규칙으로는 모자랍니다. 상자에 `id` 를 주고
+보내는 쪽에서 `to: ['id', ...]` 로 **어디로 갈지 직접 지정**하세요.
+
+```js
+[
+  { kind:'client', title:'fuel system A', sub:'tank + pumps', to:['ga'] },
+  { kind:'client', title:'utility intake', sub:'one feed is enough', to:['ta','tb'] },
+],
+[
+  { kind:'client', id:'ga', title:'generator A', sub:'off until needed', to:['aa'] },
+  { kind:'kernel', id:'ta', title:'transformer A', sub:'steps voltage down', to:['aa'] },
+]
+```
+
 ### 화살표는 무조건 검정입니다
 
 **예외 없습니다.** 상자에는 역할 색이 있지만 화살표는 언제나 검정(`#131A2E`) 하나입니다.

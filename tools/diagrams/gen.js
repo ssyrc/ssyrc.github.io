@@ -112,15 +112,48 @@ function placeBoxesInZone(z) {
 // 상자의 `arrow` 는 그 상자에서 나가는 화살표에 붙일 표시입니다 (같은 표시 = 같은 연결).
 // `arrowDash: true` 면 점선 화살표가 됩니다 — 평상시에는 흐르지 않고
 // 어떤 조건에서만 흐르는 길(예: 정전 때만 쓰는 UPS 라인)에 씁니다.
+// 상자에 `id` 를 주고 다른 상자에서 `to: ['id', ...]` 로 가리키면 그 연결만 그립니다.
+// 갈래가 많은 그림(A/B 계통)에서는 자리 순서로 짝짓는 기본 규칙으로는 모자랍니다.
+function pairs(from, to) {
+  const byId = {};
+  for (const t of to) if (t.id) byId[t.id] = t;
+  const out = [];
+  let explicit = false;
+  for (const f of from) {
+    if (!f.to) continue;
+    explicit = true;
+    for (const id of [].concat(f.to)) if (byId[id]) out.push([f, byId[id]]);
+  }
+  if (explicit) {
+    // to 를 안 적은 상자는 기본 규칙으로 잇습니다
+    from.forEach((f, k) => {
+      if (f.to) return;
+      out.push([f, to[Math.min(k, to.length - 1)]]);
+    });
+    return out;
+  }
+  if (from.length === 1) return to.map(t => [from[0], t]);
+  return from.map((f, k) => [f, to[Math.min(k, to.length - 1)]]);
+}
+
 function connect(from, to) {
   const arrows = [];
-  const push = (a, b) => {
-    if (a.end) return;
+  for (const [a, b] of pairs(from, to)) {
+    if (a.end) continue;
     arrows.push({ x1: a.x + a.w + ARROW_GAP, y1: a.cy, x2: b.x - ARROW_GAP, y2: b.cy,
                   label: a.arrow, dash: a.arrowDash ? [7, 5] : null });
-  };
-  if (from.length === 1) for (const t of to) push(from[0], t);
-  else from.forEach((f, k) => push(f, to[Math.min(k, to.length - 1)]));
+  }
+  return arrows;
+}
+
+// 세로로 흐르는 배치용 — 상자 아래에서 다음 상자 위로 잇습니다.
+function connectDown(from, to) {
+  const arrows = [];
+  for (const [a, b] of pairs(from, to)) {
+    if (a.end) continue;
+    arrows.push({ x1: a.cx, y1: a.y + a.h + ARROW_GAP, x2: b.cx, y2: b.y - ARROW_GAP,
+                  label: a.arrow, dash: a.arrowDash ? [7, 5] : null });
+  }
   return arrows;
 }
 
@@ -134,8 +167,74 @@ function arrowsBetweenZones(za, zb) {
   return connect(za.cols[za.cols.length - 1], zb.cols[0]);
 }
 
+// ---------- 세로로 흐르는 배치 ----------
+// 단(stage)이 위에서 아래로 쌓이고, 한 단 안의 상자는 가로로 늘어섭니다.
+// 긴 사슬(수전 → 변압기 → 절체 → 배전반 → UPS → 분전반 → …)은 가로로 늘어놓으면
+// 폭이 터지므로, 이런 그림은 세로로 흘려야 합니다. cols 를 단으로 읽습니다.
+const STAGE_GAP = 44;            // 단 사이 세로 간격 (= 화살표 길이)
+const BOX_GAP_X = 30;            // 한 단 안에서 상자 사이 가로 간격
+const ZONE_GAP_Y = 26;           // 존 사이 세로 간격
+
+function layoutFlow(d, M) {
+  const tw = (t, s) => M[s + '|' + t] || 0;
+
+  for (const z of d.zones) for (const st of z.cols) for (const b of st) {
+    b.w = Math.ceil(Math.max(tw(b.title, F_TITLE), b.sub ? tw(b.sub, F_SUB) : 0)) + PADX * 2;
+    b.h = b.sub ? H_TWO : H_ONE;
+    b.noteW = b.note ? Math.ceil(tw(b.note, F_NOTE)) : 0;
+  }
+
+  // 단 폭 = 상자 폭의 합 + 사이 간격. 주석이 더 넓으면 그만큼 자리를 줍니다.
+  for (const z of d.zones) {
+    z.stageW = z.cols.map(st =>
+      st.reduce((a, b) => a + Math.max(b.w, b.noteW), 0) + BOX_GAP_X * (st.length - 1));
+    z.innerW = Math.max(...z.stageW, Math.ceil(tw(z.title, F_ZONE)) + 24);
+    z.w = z.innerW + Z_PAD_X * 2;
+  }
+  const W = Math.max(...d.zones.map(z => z.w));
+  for (const z of d.zones) { z.w = W; z.innerW = W - Z_PAD_X * 2; }
+
+  let y = OUT_PAD;
+  for (const z of d.zones) {
+    z.x = OUT_PAD;
+    z.y = y;
+    let sy = y + Z_PAD_TOP;
+    z.cols.forEach((st, si) => {
+      const rowH = Math.max(...st.map(b => b.h));
+      let x = z.x + (z.w - z.stageW[si]) / 2;
+      for (const b of st) {
+        const slot = Math.max(b.w, b.noteW);
+        b.x = Math.round(x + (slot - b.w) / 2);
+        b.y = Math.round(sy + (rowH - b.h) / 2);
+        b.cx = b.x + b.w / 2; b.cy = b.y + b.h / 2;
+        x += slot + BOX_GAP_X;
+      }
+      // 주석은 상자 바로 아래에 붙고, 그만큼 다음 단이 밀립니다.
+      const below = Math.max(0, ...st.map(noteExtent));
+      sy += rowH + below + (si < z.cols.length - 1 ? STAGE_GAP : 0);
+    });
+    z.h = sy - y + Z_PAD_BOT;
+    y = z.y + z.h + ZONE_GAP_Y;
+  }
+
+  const arrows = [];
+  for (const z of d.zones) {
+    for (let i = 0; i < z.cols.length - 1; i++) arrows.push(...connectDown(z.cols[i], z.cols[i + 1]));
+  }
+  for (let i = 0; i < d.zones.length - 1; i++) {
+    const za = d.zones[i], zb = d.zones[i + 1];
+    arrows.push(...connectDown(za.cols[za.cols.length - 1], zb.cols[0]));
+  }
+
+  d.arrows = arrows;
+  d.W = Math.ceil(W + OUT_PAD * 2);
+  d.H = Math.ceil(y - ZONE_GAP_Y + OUT_PAD);
+  return d;
+}
+
 function layout(d, M) {
   const tw = (t, s) => M[s + '|' + t] || 0;
+  if (d.layout === 'flow') return layoutFlow(d, M);
 
   // 비교 그림 — 존을 두 개 이상의 "행"(예: port forwarding / proxy)으로 나눠
   // 위아래로 쌓습니다. 각 행은 자체적으로 your machine / server side 존을 가집니다.
