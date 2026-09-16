@@ -392,6 +392,29 @@ cd tools/covers && node gen.js ../../assets/images/covers
 
 ---
 
+## 초안은 미리보기 링크와 함께 건넵니다
+
+`_drafts/` 에 있는 글은 **GitHub Pages 가 빌드하지 않습니다.** 그래서 공개 URL 이 없고,
+글쓴이가 확인할 방법이 없습니다. 초안을 만들거나 고쳤으면 **언제나 미리보기 링크를 함께
+주세요.** 링크 없이 "초안으로 옮겼습니다"만 말하면 안 됩니다.
+
+만드는 법 — 초안까지 빌드한 뒤, 그 글 한 장을 통째로 담은 HTML 을 만들어 아티팩트로
+올립니다. CSS·손글씨 글꼴·표지 이미지를 전부 그 파일 안에 넣어야 링크만으로 보입니다.
+
+```bash
+jekyll build --drafts -d /tmp/site-drafts
+python3 tools/draft-preview.py /tmp/site-drafts \
+    /tmp/site-drafts/ko/2026/09/16/<슬러그>/index.html /tmp/draft.html
+```
+
+그 다음 `/tmp/draft.html` 을 아티팩트로 발행하고 링크를 건넵니다.
+
+- 글 위에 **초안이라는 띠**가 붙습니다. 발행본과 헷갈리지 않게 하려는 것입니다.
+- 사이트 안쪽 링크는 갈 곳이 없으므로 죽여둡니다.
+- 초안을 고칠 때마다 **같은 파일 경로로 다시 발행**하면 링크가 그대로 유지됩니다.
+
+---
+
 ## 색과 스타일
 
 - 사이트 팔레트는 `assets/css/style.scss` 맨 위 `:root` 한 곳에서 관리합니다.
