@@ -481,7 +481,11 @@ button { font: inherit; color: inherit; }
   text-align: center;
   overflow-x: hidden;
 }
-.mermaid svg, .diagram svg { max-width: 100%; width: 100%; height: auto; }
+.mermaid svg { max-width: 100%; width: 100%; height: auto; }
+/* 손그림 SVG 는 억지로 늘리지 않습니다. 그린 크기가 곧 글씨 크기라서,
+   좁고 긴 그림을 본문 폭까지 늘리면 세로로 터무니없이 길어집니다.
+   넘칠 때만 줄어들도록 max-width 만 겁니다. */
+.diagram svg { max-width: 100%; width: auto; height: auto; }
 /* 손으로 그린 SVG 다이어그램. 글씨는 페이지에 실린 손글씨 글꼴을 그대로 씁니다. */
 .diagram svg text { font-family: 'Gaegu', ui-rounded, sans-serif; }
 /* 다이어그램 안의 글씨는 전부 손글씨입니다. <small> 은 크기만 줄입니다.

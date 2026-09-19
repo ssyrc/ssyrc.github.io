@@ -151,7 +151,9 @@ function connectDown(from, to) {
   const arrows = [];
   for (const [a, b] of pairs(from, to)) {
     if (a.end) continue;
-    arrows.push({ x1: a.cx, y1: a.y + a.h + ARROW_GAP, x2: b.cx, y2: b.y - ARROW_GAP,
+    // 주석이 달린 상자는 주석 아래에서 화살표를 시작합니다.
+    // 상자 바닥에서 바로 내려보내면 화살표가 주석 글자를 뚫고 지나갑니다.
+    arrows.push({ x1: a.cx, y1: a.y + a.h + noteExtent(a) + ARROW_GAP, x2: b.cx, y2: b.y - ARROW_GAP,
                   label: a.arrow, dash: a.arrowDash ? [7, 5] : null });
   }
   return arrows;
@@ -343,7 +345,10 @@ function render(d) {
   for (const z of d.zones) {
     o.push(paths(g.rectangle(z.x, z.y, z.w, z.h, {
       seed: nextSeed(), roughness: 0.9, bowing: 0.6, stroke: '#94a3b8', strokeWidth: 1.3 }), [9, 7]));
-    o.push(text(z.x + z.w / 2, z.y + 20, z.title, F_ZONE, '#64748b'));
+    // 세로로 흐르는 배치에서는 존을 건너는 화살표가 한가운데를 지나갑니다.
+    // 제목을 가운데 두면 화살표가 글자를 뚫고 지나가므로 왼쪽으로 붙입니다.
+    if (d.layout === 'flow') o.push(text(z.x + Z_PAD_X, z.y + 20, z.title, F_ZONE, '#64748b', 'start'));
+    else o.push(text(z.x + z.w / 2, z.y + 20, z.title, F_ZONE, '#64748b'));
   }
   for (const z of d.zones) for (const col of z.cols) for (const b of col) {
     const c = spec.colors[b.kind];

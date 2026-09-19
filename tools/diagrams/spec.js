@@ -104,56 +104,36 @@ module.exports = {
     // kernel(빨간 점선)=자동으로, 눈에 안 띄게 동작하는 장치, server(파랑)=최종 목적지.
     // -------------------------------------------------------------------
 
-    // 1. 건물 전원 → UPS → 서버룸. A/B 두 계통을 세로로 흘립니다.
-    //    상용전원 인입은 하나여도 됩니다 — 티어를 가르는 것은 인입 개수가 아니라,
-    //    상용전원이 없을 때 현장 발전설비로 버틸 수 있느냐입니다.
+    // 1. 건물 인입 → 전기실 → 서버룸. 한 줄짜리 개념도입니다.
+    //    A/B 이중화는 글 마지막 절에서 따로 다루므로 여기서는 일부러 한 계통만 그립니다.
     {
       id: 'power-building',
       layout: 'flow',
-      alt: 'one utility intake feeds two transformers; each transfer switch also takes its own generator, and each side runs its own low voltage switchboard, UPS with batteries, UPS output switchboard and server room panelboard, with essential cooling fed from the switchboard ahead of the UPS',
+      alt: 'utility power comes in through a transformer to a transfer switch that can also take the standby generator; the low voltage switchboard splits cooling power off and feeds the UPS, and the UPS output board feeds the server room panelboard',
       zones: [
         { title: 'incoming power',
           cols: [
+            [{ kind:'client', title:'utility intake', sub:'from the grid', to:['tr'] }],
             [
-              { kind:'client', title:'fuel system A', sub:'tank + pumps', to:['ga'] },
-              { kind:'client', title:'utility intake', sub:'one feed is enough', to:['ta','tb'] },
-              { kind:'client', title:'fuel system B', sub:'tank + pumps', to:['gb'] },
+              { kind:'kernel', id:'tr', title:'transformer', sub:'steps voltage down', to:['ts'] },
+              { kind:'client', id:'gn', title:'generator', sub:'off until needed', to:['ts'], arrowDash: true },
             ],
-            [
-              { kind:'client', id:'ga', title:'generator A', sub:'off until needed', to:['aa'], arrowDash: true },
-              { kind:'kernel', id:'ta', title:'transformer A', sub:'steps voltage down', to:['aa'] },
-              { kind:'kernel', id:'tb', title:'transformer B', sub:'steps voltage down', to:['ab'] },
-              { kind:'client', id:'gb', title:'generator B', sub:'off until needed', to:['ab'], arrowDash: true },
-            ],
-            [
-              { kind:'kernel', id:'aa', title:'transfer switch A', sub:'utility or generator', to:['la'] },
-              { kind:'kernel', id:'ab', title:'transfer switch B', sub:'utility or generator', to:['lb'] },
-            ],
+            [{ kind:'kernel', id:'ts', title:'transfer switch', sub:'utility or generator',
+               note:'* the dashed line only flows when the utility is gone' }],
           ] },
         { title: 'electrical room',
           cols: [
+            [{ kind:'proxy', id:'lv', title:'LV switchboard', sub:'low voltage side', to:['cl','up'] }],
             [
-              { kind:'proxy', id:'la', title:'LV switchboard A', sub:'low voltage side', to:['ua','ca'] },
-              { kind:'proxy', id:'lb', title:'LV switchboard B', sub:'low voltage side', to:['ub','cb'] },
+              { kind:'server', id:'cl', title:'cooling power', sub:'not on the UPS', end: true },
+              { kind:'proxy', id:'up', title:'UPS', sub:'battery inside', to:['ob'] },
             ],
-            [
-              { kind:'server', id:'ca', title:'cooling power A', sub:'not on the UPS', end: true },
-              { kind:'proxy', id:'ua', title:'UPS A', sub:'battery A inside', to:['da'] },
-              { kind:'proxy', id:'ub', title:'UPS B', sub:'battery B inside', to:['db'] },
-              { kind:'server', id:'cb', title:'cooling power B', sub:'not on the UPS', end: true },
-            ],
-            [
-              { kind:'proxy', id:'da', title:'UPS output board A', sub:'clean power only', to:['ra'] },
-              { kind:'proxy', id:'db', title:'UPS output board B', sub:'clean power only', to:['rb'] },
-            ],
+            [{ kind:'proxy', id:'ob', title:'UPS output board', sub:'clean power only' }],
           ] },
         { title: 'server room',
           cols: [
-            [
-              { kind:'proxy', id:'ra', title:'room panelboard A', sub:'feeds the rack rows', end: true,
-                note:'* A alone must carry the whole load' },
-              { kind:'proxy', id:'rb', title:'room panelboard B', sub:'feeds the rack rows', end: true },
-            ],
+            [{ kind:'proxy', title:'room panelboard', sub:'feeds the rack rows', end: true,
+               note:'* one circuit per rack row' }],
           ] },
       ],
     },
@@ -264,24 +244,18 @@ module.exports = {
       ],
     },
 
-    // 5. 랙 PDU · 서버 PSU (한 랙 안)
+    // 5. 랙 PDU · 서버 PSU — 리셉터클에서 CPU 까지 한 줄로만 봅니다.
     {
-      id: 'psu-redundancy',
+      id: 'rack-pdu-psu',
       layout: 'cols',
-      alt: 'two separate rack PDU feeds each power their own PSU group, and either group alone can keep the server running',
+      alt: 'the receptacle feeds the rack PDU, one of its outlets feeds a server PSU, and the PSU turns AC into the DC the board uses',
       zones: [
         { title: 'inside the rack',
           cols: [
-            [
-              { kind:'proxy', title:'rack PDU A', sub:'feed A' },
-              { kind:'proxy', title:'rack PDU B', sub:'feed B' },
-            ],
-            [
-              { kind:'server', title:'PSU group A', sub:'AC \u2192 DC' },
-              { kind:'server', title:'PSU group B', sub:'AC \u2192 DC' },
-            ],
-            [{ kind:'server', title:'server board', sub:'either group alone is enough',
-               note:'* size each group for the full load' }],
+            [{ kind:'kernel', title:'receptacle', sub:'from the tap box' }],
+            [{ kind:'proxy', title:'rack PDU', sub:'splits into outlets' }],
+            [{ kind:'server', title:'server PSU', sub:'AC \u2192 DC' }],
+            [{ kind:'server', title:'server board', sub:'CPU / GPU / memory' }],
           ] },
       ],
     },
