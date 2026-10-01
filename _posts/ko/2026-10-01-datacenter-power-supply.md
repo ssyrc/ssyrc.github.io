@@ -121,6 +121,13 @@ UPS와 발전기는 역할이 다릅니다. **UPS는 평상시에도 전기가 �
 
 **서버 PSU(server PSU)**는 서버 안에서 AC를 DC로 바꿔주는 장치입니다. 메인보드와
 CPU, GPU가 쓰는 건 DC거든요. 서버 뒤판에서 전원 코드가 꽂히는 그 자리가 PSU입니다.
+전력을 많이 쓰는 장비는 PSU 를 여러 개 답니다.
+
+<figure class="photo">
+  <img src="/assets/images/server-psu-xe9780.jpg" alt="GPU 서버 뒤판. 위쪽은 확장 슬롯, 아래쪽에 전원 공급 장치가 줄지어 있고 번호가 매겨져 있다." width="532" height="375" loading="lazy" decoding="async">
+  <figcaption>GPU 서버 뒤판의 PSU 예시 — Dell PowerEdge XE9780. 번호 4~15 열두 개가 PSU 입니다.
+  <span class="src">출처: <a href="https://5.imimg.com/data5/SELLER/Doc/2026/6/617694769/WM/JW/WQ/212405430/poweredge-xe9780-technical-guide.pdf">Dell PowerEdge XE9780 Technical Guide</a></span></figcaption>
+</figure>
 
 여기까지가 한전에서 CPU까지 이어지는 한 줄입니다.
 
