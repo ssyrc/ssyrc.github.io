@@ -68,67 +68,6 @@ const row = (hx, depth, step) => (i) => [hx + (i * step) / 2, depth + (i * step)
 const back = (hx, depth, gap) => [hx - gap / 2, depth + gap / 2];
 
 const scenes = {
-  // 데이터센터 전력 경로: 수전·발전·UPS·PDU 한 줄과, 버스덕트가 걸린 랙 두 줄.
-  power: () => {
-    const o = [];
-    o.push(floor(8, 5, { hx0: -122, depth0: -52, step: 30 }));
-
-    // 전력 설비 한 줄 — 본문 1절의 순서 그대로 (한전 → 발전기 → ATS → UPS)
-    const E = row(-130, -55, 30);
-    o.push(T.transformer(...E(0)));
-    o.push(T.generator(...E(1)));
-    o.push(T.cabinet(...E(2), { w: 16, h: 34, badge: '#FBBF24' }));
-    o.push(T.cabinet(...E(3), { w: 17, h: 38, badge: '#38BDF8' }));
-    o.push(T.battery(...E(3.85)));
-    o.push(T.label(...E(0), 20, 'UTILITY', { dy: -26, size: 9, dx: -14 }));
-    o.push(T.label(...E(1), 26, 'GENERATOR', { dy: -54, size: 9, dx: 16 }));
-    o.push(T.label(...E(2), 36, 'ATS', { dy: -28, size: 9 }));
-    o.push(T.label(...E(3), 40, 'UPS', { dy: -50, size: 9 }));
-
-    // 랙 뒷줄 + 버스덕트
-    const R1 = row(2, -30, 30);
-    for (let i = 0; i < 5; i++) o.push(T.rack(...R1(i), { slots: 8 }));
-    o.push(T.busway(...R1(2), 60, 128, { taps: [-48, -18, 12, 42] }));
-    o.push(T.label(...R1(0), 62, 'BUSWAY', { dy: -28, size: 9 }));
-
-    // 랙 앞줄
-    const R2 = row(...back(2, -30, 62), 30);
-    for (let i = 0; i < 5; i++) o.push(T.rack(...R2(i), { slots: 8 }));
-    o.push(T.label(...R2(4), 30, 'RACK', { dy: 6, size: 9, dx: 46, anchor: 'start' }));
-
-    // 전기가 흐르는 길
-    const p = [[...E(0), 18], [...E(1), 24], [...E(2), 34], [...E(3), 38], [...R2(0), 50]];
-    for (let i = 0; i < p.length - 1; i++)
-      o.push(line([p[i][0], p[i][1], p[i][2]], [p[i + 1][0], p[i + 1][1], p[i + 1][2]], '#FBBF24', { sw: 2.2 }));
-
-    return frame('power', `<stop offset="0%" stop-color="#3B32B0"/><stop offset="55%" stop-color="#6D5DF6"/><stop offset="100%" stop-color="#38BDF8"/>`, o.join('\n'));
-  },
-
-  // 프록시: 내 컴퓨터 → 중개자 → 서버 쪽 랙 줄
-  proxy: () => {
-    const o = [];
-    o.push(floor(7, 5, { hx0: -104, depth0: -40, step: 30 }));
-
-    const C = [-112, -36];
-    o.push(T.laptop(...C));
-    o.push(T.label(...C, 14, 'CLIENT', { dy: -30, size: 9 }));
-
-    const X = [-54, -8];
-    o.push(T.cabinet(...X, { w: 20, d: 20, h: 26, color: '#E8788C', panel: '#FCE3E8', badge: '#FBBF24' }));
-    o.push(T.label(...X, 28, 'PROXY', { dy: -30, size: 9 }));
-
-    const S1 = row(26, -30, 30);
-    for (let i = 0; i < 4; i++) o.push(T.rack(...S1(i), { slots: 8 }));
-    o.push(T.label(...S1(0), 56, 'SERVERS', { dy: -30, size: 9 }));
-
-    const S2 = row(...back(26, -30, 60), 30);
-    for (let i = 0; i < 4; i++) o.push(T.rack(...S2(i), { slots: 8 }));
-
-    o.push(line([...C, 15], [...X, 22], '#F8FAFF', { sw: 2.2, opacity: 0.9 }));
-    o.push(line([...X, 26], [...S2(0), 48], '#F8FAFF', { sw: 2.2, opacity: 0.9 }));
-    return frame('proxy', `<stop offset="0%" stop-color="#4F46E5"/><stop offset="55%" stop-color="#7C6BF7"/><stop offset="100%" stop-color="#A855F7"/>`, o.join('\n'));
-  },
-
   // ----- 주제별 기본 커버 (글에 cover 를 지정하지 않았을 때 쓰입니다) -----
 
   // CS 기초 — 층층이 쌓인 추상화 계층
