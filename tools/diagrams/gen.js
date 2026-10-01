@@ -246,17 +246,21 @@ function layout(d, M) {
     // 같은 자리(예: 두 행의 "server side")끼리 폭을 맞춰서 위아래가 나란히 서게 합니다.
     const n = d.groups[0].zones.length;
     for (let i = 0; i < n; i++) {
-      const w = Math.max(...d.groups.map(g => g.zones[i].w));
-      for (const g of d.groups) g.zones[i].w = w;
       const cols = d.groups[0].zones[i].cols.length;
       for (let c = 0; c < cols; c++) {
         const cw = Math.max(...d.groups.map(g => g.zones[i].colOuter[c]));
         for (const g of d.groups) g.zones[i].colOuter[c] = cw;
       }
+      // 열 폭을 맞춘 다음에 존 폭을 다시 잽니다. 가장 넓은 열이 행마다 다를 수 있어서,
+      // 맞춘 열들의 합이 어느 행의 원래 폭보다도 커질 수 있습니다. 먼저 존 폭을 정하면
+      // 그만큼 상자가 점선 밖으로 삐져나갑니다.
       for (const g of d.groups) {
         const z = g.zones[i];
         z.innerW = z.colOuter.reduce((a, b) => a + b, 0) + COL_GAP * (z.cols.length - 1);
+        z.w = Math.max(z.innerW, Math.ceil(tw(z.title, F_ZONE)) + 24) + Z_PAD_X * 2;
       }
+      const w = Math.max(...d.groups.map(g => g.zones[i].w));
+      for (const g of d.groups) g.zones[i].w = w;
     }
 
     let y = OUT_PAD, W = 0;

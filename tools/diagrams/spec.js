@@ -7,6 +7,9 @@ const C = {
   // 전기를 바꾸거나 고르거나 실어 나르는 설비. 평상시에도 반드시 지나는 길이라
   // 실선으로 그립니다. 전력 그림에서 점선은 '조건부 경로' 하나만 뜻해야 합니다.
   gear:   { fill:'#fffbeb', stroke:'#b45309', text:'#b45309' },
+  // 지금은 전기를 안 내보내는 쪽. 색은 client 와 같고 선만 점선입니다 —
+  // 같은 장비가 상태에 따라 실선/점선을 오갑니다 (발전기: 정지 → 기동 → 인수).
+  standby:{ fill:'#ecfdf5', stroke:'#15803d', text:'#15803d', dash:[9,6] },
 };
 
 module.exports = {
@@ -122,7 +125,7 @@ module.exports = {
             [{ kind:'client', title:'utility intake', sub:'from the grid', to:['tr'] }],
             [
               { kind:'gear', id:'tr', title:'transformer', sub:'steps voltage down', to:['ts'] },
-              { kind:'client', id:'gn', title:'generator', sub:'off until needed', to:['ts'], arrowDash: true },
+              { kind:'standby', id:'gn', title:'generator', sub:'off until needed', to:['ts'], arrowDash: true },
             ],
             [{ kind:'gear', id:'ts', title:'transfer switch', sub:'utility or generator',
                note:'* the dashed line only flows when the utility is gone' }],
@@ -196,7 +199,7 @@ module.exports = {
               cols: [
                 [
                   { kind:'client', title:'utility', sub:'live' },
-                  { kind:'client', title:'generator', sub:'shut down', end: true },
+                  { kind:'standby', title:'generator', sub:'shut down', end: true },
                 ],
                 [{ kind:'proxy', title:'UPS', sub:'battery full, passing through' }],
                 [{ kind:'server', title:'server', sub:'running' }],
@@ -207,8 +210,8 @@ module.exports = {
             { title: 'who is carrying the load',
               cols: [
                 [
-                  { kind:'client', title:'utility', sub:'dead', end: true },
-                  { kind:'client', title:'generator', sub:'cranking', end: true,
+                  { kind:'standby', title:'utility', sub:'dead', end: true },
+                  { kind:'standby', title:'generator', sub:'cranking', end: true,
                     note:'* takes tens of seconds' },
                 ],
                 [{ kind:'proxy', title:'UPS', sub:'battery carries it' }],
@@ -220,7 +223,7 @@ module.exports = {
             { title: 'who is carrying the load',
               cols: [
                 [
-                  { kind:'client', title:'utility', sub:'still dead', end: true },
+                  { kind:'standby', title:'utility', sub:'still dead', end: true },
                   { kind:'client', title:'generator', sub:'carrying the load' },
                 ],
                 [{ kind:'proxy', title:'UPS', sub:'recharging the battery' }],
@@ -246,6 +249,32 @@ module.exports = {
         { title: 'in the rack',
           cols: [
             [{ kind:'proxy', title:'rack PDU', sub:'power cord plugs in here' }],
+          ] },
+      ],
+    },
+
+    // 6. 이중화 예시 — 랙 PDU 는 2N, 서버 PSU 는 N+2 로 짰을 때의 결선.
+    //    N=2 (두 개면 full load), 설치 4개, A 에 둘 B 에 둘.
+    {
+      id: 'redundancy-2n-n2',
+      layout: 'flow',
+      alt: 'two rack PDUs each sized for the whole rack feed four power supplies, two on each side, and the server needs any two of the four to run',
+      zones: [
+        { title: 'rack',
+          cols: [
+            [
+              { kind:'proxy', id:'pa', title:'rack PDU A', sub:'100% of the rack', to:['s1','s2'],
+                note:'* 2N — either side alone runs the rack' },
+              { kind:'proxy', id:'pb', title:'rack PDU B', sub:'100% of the rack', to:['s3','s4'] },
+            ],
+            [
+              { kind:'server', id:'s1', title:'PSU 1', sub:'feed A', to:['bd'] },
+              { kind:'server', id:'s2', title:'PSU 2', sub:'feed A', to:['bd'] },
+              { kind:'server', id:'s3', title:'PSU 3', sub:'feed B', to:['bd'] },
+              { kind:'server', id:'s4', title:'PSU 4', sub:'feed B', to:['bd'] },
+            ],
+            [{ kind:'server', id:'bd', title:'server board', sub:'any 2 of the 4 carry it',
+               note:'* N+2 — N is 2, so two spare PSUs' }],
           ] },
       ],
     },
