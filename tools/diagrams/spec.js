@@ -134,7 +134,7 @@ module.exports = {
           cols: [
             [{ kind:'proxy', id:'lv', title:'LV switchboard', sub:'low voltage side', to:['cl','up'] }],
             [
-              { kind:'server', id:'cl', title:'cooling power', sub:'not on the UPS', end: true },
+              { kind:'server', id:'cl', title:'cooling power', sub:'split before the UPS', end: true },
               { kind:'proxy', id:'up', title:'UPS', sub:'battery inside', to:['ob'] },
             ],
             [{ kind:'proxy', id:'ob', title:'UPS output board', sub:'clean power only' }],
