@@ -1,6 +1,6 @@
 ---
 title: "데이터센터에서 서버로 전력은 어떻게 공급될까요?"
-date: 2026-09-16 12:00:00 +0900
+date: 2026-10-01 12:00:00 +0900
 category: hpc
 tags: [power, psu, pdu, ups, rack, datacenter, tier]
 cover: /assets/images/covers/power.svg
