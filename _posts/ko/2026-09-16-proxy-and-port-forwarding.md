@@ -3,7 +3,7 @@ title: "프록시와 포트 포워딩, 무엇이 다를까요?"
 date: 2026-09-16
 category: server-network
 tags: [proxy, port-forwarding, ssh, socks, nginx]
-cover: /assets/images/covers/proxy.svg
+cover: /assets/images/covers/proxy-forwarding.webp
 ---
 
 둘 다 "내 트래픽을 다른 곳으로 보낸다"는 점은 같은데, 무엇을 기준으로 갈리는지가
