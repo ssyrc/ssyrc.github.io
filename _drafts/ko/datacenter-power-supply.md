@@ -307,8 +307,9 @@ A/B 로 나누는 건 **Tier III 부터**입니다.
 | **Constructed Facility** | **지어진 건물**이 실제로 그렇게 돌아가는지 현장 검증 |
 | **Operational Sustainability** | 그 수준을 **유지하도록 운영**되는지 |
 
-"Tier III 설계 인증"은 **도면만** 받은 것이라, 지어진 건물까지 검증받은
-Constructed Facility 인증보다 약한 주장입니다.
+**순서대로 쌓입니다.** 도면 인증을 받고, 그 다음 지어진 건물 인증을 받아야 운영 등급을
+신청할 수 있습니다. 그래서 "Tier III 설계 인증"은 **도면만** 받은 것이라, 지어진 건물까지
+검증받은 Constructed Facility 인증보다 약한 주장입니다. 어느 단계인지 확인하세요.
 
 ※ **티어는 등수가 아닙니다.** 높을수록 좋은 게 아니라 **필요한 만큼** 고르는 것입니다.
 Tier IV 는 짓는 값도 돌리는 값도 훨씬 비싸서, 금융 거래나 의료처럼 몇 분도 못 멈추는
@@ -330,14 +331,15 @@ Uptime Institute 가 티어를 가용률로 정의하지는 않습니다.** 티�
 사업자마다 다르고, 도면은 대개 공개되지 않습니다.
 {: .note}
 
-※ 참고 — 원 표준은 Uptime Institute 의 *Tier Standard: Topology* 이고, 요약은
-[Tier Classification System](https://uptimeinstitute.com/tiers) 과
-[Tier Certification](https://uptimeinstitute.com/tier-certification) 에 있습니다.
-티어를 가용률로 읽으면 안 되는 이유는
-[What data center Tier levels can and cannot tell you about uptime (TechTarget)](https://www.techtarget.com/searchdatacenter/tip/What-data-center-Tier-levels-can-and-cannot-tell-you-about-uptime),
-N·N+1·2N 의 정의는
-[Data Center Redundancy Definition & Reliability Best Practices (Socomec)](https://www.socomec.us/en-us/solutions/business/data-centers/data-center-redundancy-definition-reliability-best-practices)
-를 참고했습니다.
+※ 참고 — 티어의 원 표준은 Uptime Institute 가 펴낸
+*Data Center Site Infrastructure Tier Standard: Topology* 이고, 운영 등급은
+*Tier Standard: Operational Sustainability* 입니다. 두 문서 모두 Uptime Institute
+웹사이트에서 신청하면 받을 수 있습니다. N·N+1·2N 같은 이중화 표기는 특정 표준이 아니라
+업계에서 공통으로 쓰는 말입니다.
+{: .note}
+
+※ 이 글에는 바깥 링크를 걸지 않았습니다. 자료 페이지 주소는 자주 바뀌어서, 확인하지
+않은 주소를 걸어두면 머지않아 깨집니다. 위 문서 제목으로 검색하시면 됩니다.
 {: .note}
 
 
