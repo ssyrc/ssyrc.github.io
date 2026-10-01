@@ -24,7 +24,7 @@ cover: /assets/images/covers/power-supply.webp
 **수전설비(utility intake)와 변압기(transformer)** — 한전에서 들어온 고압을 변압기가
 건물에서 쓸 수 있는 전압으로 낮춥니다.
 
-**전원 절체설비(ATS, transfer switch)** — 상용전원과 발전기(generator) 중 **살아 있는
+**전원 절체설비(ATS, Automatic Transfer Switch)** — 상용전원과 발전기(generator) 중 **살아 있는
 쪽을 골라** 아래로 내려보냅니다. 그림에서 발전기 쪽 선만 점선인데, 평상시에는 전기가
 흐르지 않는 길이라는 뜻입니다. 변압기와 절체설비는 평상시에도 반드시 지나는 설비라
 실선으로 그렸습니다.
@@ -187,7 +187,7 @@ CPU, GPU가 쓰는 건 DC거든요. 서버 뒤판에서 전원 코드가 꽂히�
 | --- | --- | --- |
 | 상용전원 인입 (utility intake) | 1 회선 + 발전기 | 한전 정전 |
 | 발전기 (generator) | N+1 | 발전기 한 대가 시동에 실패 |
-| 절체설비 (transfer switch) | 2N — A용·B용 따로 | 절체설비 자체의 정비 |
+| 절체설비 (ATS) | 2N — A용·B용 따로 | 절체설비 자체의 정비 |
 | 배전반 (LV switchboard) | 2N — A반·B반 | 반 하나의 정비·사고 |
 | UPS | 경로마다 N+1, 경로는 2N | UPS 모듈 고장 + 계통 정비 |
 | 서버룸 분전반 (room panelboard) | 2N — A반·B반 | 분전반 하나의 정비 |
@@ -254,7 +254,7 @@ PSU 를 여섯 개(N+2) 달고 A 에 셋, B 에 셋으로 꽂았다고 해봅시
 | --- | --- | --- | --- |
 | 수전설비 · 변압기 | utility intake · transformer | 건물 인입 | 고압을 받아 쓸 수 있는 전압으로 낮춤 |
 | 발전기 · 연료계통 | generator · fuel system | 데이터센터 부지 | 정전 시 자체 발전, 평소엔 정지 |
-| 전원 절체설비(ATS) | transfer switch | 전기실 | 상용전원과 발전기 중 살아 있는 쪽을 고름 |
+| 전원 절체설비 | ATS (Automatic Transfer Switch) | 전기실 | 상용전원과 발전기 중 살아 있는 쪽을 고름 |
 | 배전반 | LV switchboard | 전기실 | 큰 단위로 전기를 나눔. 냉각 전원도 여기서 갈라짐 |
 | UPS · 배터리 | UPS · battery | 전기실 | 평상시에도 부하가 통과, 정전 초반을 배터리로 버팀 |
 | UPS 출력 배전반 | UPS output board | 전기실 | UPS를 지난 전기를 모아 다시 나눔 |

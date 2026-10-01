@@ -118,7 +118,7 @@ module.exports = {
     {
       id: 'power-building',
       layout: 'flow',
-      alt: 'utility power comes in through a transformer to a transfer switch that can also take the standby generator; the low voltage switchboard splits cooling power off and feeds the UPS, and the UPS output board feeds the server room panelboard',
+      alt: 'utility power comes in through a transformer to an automatic transfer switch (ATS) that can also take the standby generator; the low voltage switchboard splits cooling power off and feeds the UPS, and the UPS output board feeds the server room panelboard',
       zones: [
         { title: 'incoming power',
           cols: [
@@ -127,7 +127,7 @@ module.exports = {
               { kind:'gear', id:'tr', title:'transformer', sub:'steps voltage down', to:['ts'] },
               { kind:'standby', id:'gn', title:'generator', sub:'off until needed', to:['ts'], arrowDash: true },
             ],
-            [{ kind:'gear', id:'ts', title:'transfer switch', sub:'utility or generator',
+            [{ kind:'gear', id:'ts', title:'ATS', sub:'utility or generator',
                note:'* the dashed line only flows when the utility is gone' }],
           ] },
         { title: 'electrical room',
