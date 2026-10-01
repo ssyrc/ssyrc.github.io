@@ -126,7 +126,7 @@ CPU, GPU가 쓰는 건 DC거든요. 서버 뒤판에서 전원 코드가 꽂히�
 <figure class="photo">
   <img src="/assets/images/server-psu-xe9780.jpg" alt="GPU 서버 뒤판. 위쪽은 확장 슬롯, 아래쪽에 전원 공급 장치가 줄지어 있고 번호가 매겨져 있다." width="532" height="375" loading="lazy" decoding="async">
   <figcaption>GPU 서버 뒤판의 PSU 예시 — Dell PowerEdge XE9780. 번호 4~15 열두 개가 PSU 입니다.
-  <span class="src">출처: <a href="https://5.imimg.com/data5/SELLER/Doc/2026/6/617694769/WM/JW/WQ/212405430/poweredge-xe9780-technical-guide.pdf">Dell PowerEdge XE9780 Technical Guide</a></span></figcaption>
+  <span class="src">출처: <a href="https://dl.dell.com/content/manual36924878-dell-poweredge-xe9780-%EC%84%A4%EC%B9%98-%EB%B0%8F-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%84%A4%EB%AA%85%EC%84%9C.pdf?language=ko-kr">Dell PowerEdge XE9780 설치 및 서비스 설명서</a></span></figcaption>
 </figure>
 
 여기까지가 한전에서 CPU까지 이어지는 한 줄입니다.
