@@ -93,7 +93,7 @@ UPS와 발전기는 역할이 다릅니다. **UPS는 평상시에도 전기가 �
 **리셉터클(receptacle)**은 TAP BOX에 달린 콘센트입니다. 랙의 전원 코드가 실제로 꽂히는 자리죠.
 
 <figure class="photo">
-  <img src="/assets/images/busway-tapbox-vertiv.webp" alt="랙 여섯 대가 늘어선 줄 위로 레일 하나가 지나가고, 레일에 물린 상자마다 전원 코드가 아래 랙으로 내려온다." width="530" height="432" loading="lazy" decoding="async">
+  <img src="/assets/images/busway-tapbox-impb.webp" alt="랙 여섯 대가 늘어선 줄 위로 레일 하나가 지나가고, 레일에 물린 상자마다 전원 코드가 아래 랙으로 내려온다." width="530" height="432" loading="lazy" decoding="async">
   <figcaption>랙 줄 위를 지나는 버스덕트와 거기에 물린 TAP BOX — Vertiv PowerBar iMPB. 랙마다 코드가 레일에서 바로 내려옵니다.
   <span class="src">출처: <a href="https://www.vertiv.com/globalassets/shared/vertiv-powerbarimpb-ds-en-emea-mka4l0ukmbx-web.pdf">Vertiv, PowerBar iMPB 데이터시트</a></span></figcaption>
 </figure>
