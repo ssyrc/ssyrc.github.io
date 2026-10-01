@@ -4,6 +4,9 @@ const C = {
   proxy:  { fill:'#fef2f2', stroke:'#dc2626', text:'#dc2626' },
   server: { fill:'#eff6ff', stroke:'#1d4ed8', text:'#1d4ed8' },
   kernel: { fill:'#ffffff', stroke:'#dc2626', text:'#64748b', dash:[9,6] },
+  // 전기를 바꾸거나 고르거나 실어 나르는 설비. 평상시에도 반드시 지나는 길이라
+  // 실선으로 그립니다. 전력 그림에서 점선은 '조건부 경로' 하나만 뜻해야 합니다.
+  gear:   { fill:'#fffbeb', stroke:'#b45309', text:'#b45309' },
 };
 
 module.exports = {
@@ -100,8 +103,11 @@ module.exports = {
 
     // -------------------------------------------------------------------
     // 데이터센터 전력 공급 글. 역할 색은 전기가 흐르는 방향에 맞춰 재사용합니다.
-    // client(초록)=전기가 시작되는 곳, proxy(빨강)=받아서 다시 내보내는 중개 장비,
-    // kernel(빨간 점선)=자동으로, 눈에 안 띄게 동작하는 장치, server(파랑)=최종 목적지.
+    // client(초록)=전기가 시작되는 곳, gear(주황)=전기를 바꾸거나 고르거나 실어 나르는 설비,
+    // proxy(빨강)=받아서 여러 갈래로 나누는 반, server(파랑)=최종 목적지.
+    // 전력 그림에서 상자는 전부 실선입니다. 점선은 화살표에만 쓰고, 뜻은 하나 —
+    // '평상시엔 안 흐르고 조건이 맞을 때만 흐르는 길'. 상자를 점선으로 그리면
+    // 없어도 되는 장비처럼 읽힙니다 (변압기·절체설비를 그렇게 그렸다가 반려됐습니다).
     // -------------------------------------------------------------------
 
     // 1. 건물 인입 → 전기실 → 서버룸. 한 줄짜리 개념도입니다.
@@ -115,10 +121,10 @@ module.exports = {
           cols: [
             [{ kind:'client', title:'utility intake', sub:'from the grid', to:['tr'] }],
             [
-              { kind:'kernel', id:'tr', title:'transformer', sub:'steps voltage down', to:['ts'] },
+              { kind:'gear', id:'tr', title:'transformer', sub:'steps voltage down', to:['ts'] },
               { kind:'client', id:'gn', title:'generator', sub:'off until needed', to:['ts'], arrowDash: true },
             ],
-            [{ kind:'kernel', id:'ts', title:'transfer switch', sub:'utility or generator',
+            [{ kind:'gear', id:'ts', title:'transfer switch', sub:'utility or generator',
                note:'* the dashed line only flows when the utility is gone' }],
           ] },
         { title: 'electrical room',
@@ -152,8 +158,8 @@ module.exports = {
               { kind:'proxy', title:'room panelboard B', sub:'feeds the rack rows' },
             ],
             [
-              { kind:'kernel', title:'busway A', sub:'conductor rail' },
-              { kind:'kernel', title:'busway B', sub:'conductor rail' },
+              { kind:'gear', title:'busway A', sub:'conductor rail' },
+              { kind:'gear', title:'busway B', sub:'conductor rail' },
             ],
             [
               { kind:'proxy', title:'tap box A', sub:'branch breaker' },
@@ -232,14 +238,14 @@ module.exports = {
       zones: [
         { title: 'above the rack',
           cols: [
-            [{ kind:'kernel', title:'busway', sub:'conductor rail' }],
+            [{ kind:'gear', title:'busway', sub:'conductor rail' }],
             [{ kind:'proxy', title:'tap box', sub:'taps off one circuit',
                note:'* branch breaker sits in here' }],
-            [{ kind:'proxy', title:'receptacle', sub:'the outlet itself' }],
+            [{ kind:'gear', title:'receptacle', sub:'the outlet itself' }],
           ] },
         { title: 'in the rack',
           cols: [
-            [{ kind:'server', title:'rack PDU', sub:'power cord plugs in here' }],
+            [{ kind:'proxy', title:'rack PDU', sub:'power cord plugs in here' }],
           ] },
       ],
     },
@@ -252,7 +258,7 @@ module.exports = {
       zones: [
         { title: 'inside the rack',
           cols: [
-            [{ kind:'kernel', title:'receptacle', sub:'from the tap box' }],
+            [{ kind:'gear', title:'receptacle', sub:'from the tap box' }],
             [{ kind:'proxy', title:'rack PDU', sub:'splits into outlets' }],
             [{ kind:'server', title:'server PSU', sub:'AC \u2192 DC' }],
             [{ kind:'server', title:'server board', sub:'CPU / GPU / memory' }],
