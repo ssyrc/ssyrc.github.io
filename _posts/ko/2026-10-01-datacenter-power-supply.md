@@ -3,7 +3,7 @@ title: "데이터센터에서 서버로 전력은 어떻게 공급될까요?"
 date: 2026-10-01 12:00:00 +0900
 category: hpc
 tags: [power, psu, pdu, ups, rack, datacenter, tier]
-cover: /assets/images/covers/power.svg
+cover: /assets/images/covers/power-supply.webp
 ---
 
 서버 뒤판에는 케이블 한 가닥만 꽂혀 있는데, 그 선을 거슬러 올라가면 발전기, UPS,
