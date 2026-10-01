@@ -433,6 +433,26 @@ button { font: inherit; color: inherit; }
 .prose li { margin-bottom: .4rem; }
 .prose li::marker { color: var(--blue); }
 .prose img { border-radius: 14px; margin: 1.6rem 0; }
+
+/* 본문 속 사진 + 설명. 제품 사진은 대개 흰 바탕이라, 다이어그램과 같은 흰 판 위에
+   올려야 다크 모드에서도 네모난 흰 덩어리로 떠 보이지 않습니다. */
+.prose .photo {
+  margin: 1.9rem 0;
+  padding: 18px 16px 14px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  text-align: center;
+}
+.prose .photo img {
+  margin: 0; border-radius: 0;
+  max-width: 100%; width: auto; max-height: 400px; height: auto;
+}
+.prose .photo figcaption {
+  margin-top: 12px; font-size: .85rem; line-height: 1.55; color: #64748b;
+}
+.prose .photo figcaption .src { display: block; margin-top: 3px; font-size: .78rem; color: #94a3b8; }
+.prose .photo figcaption a { color: inherit; text-decoration: underline; }
 .prose hr { border: none; border-top: 1px solid var(--line); margin: 2.6rem 0; }
 .prose blockquote {
   margin: 1.6rem 0; padding: .3rem 0 .3rem 1.2rem;

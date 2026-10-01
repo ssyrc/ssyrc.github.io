@@ -113,6 +113,12 @@ UPS와 발전기는 역할이 다릅니다. **UPS는 평상시에도 전기가 �
 서버 전원 코드가 뒤로 나오니 **보통 랙 뒷면에** 세로로 길게 붙입니다. 정해진 건
 아니어서 앞쪽이나 옆 기둥에 붙이기도 하고, 세로형(0U) 대신 1U·2U 가로형을 쓰기도 합니다.
 
+<figure class="photo">
+  <img src="/assets/images/rack-pdu-0u.jpg" alt="랙 뒷면에 세로로 설치하는 0U 랙 PDU. 콘센트가 세로로 줄지어 있고 아래쪽에 전원 코드가 나와 있다." width="386" height="400" loading="lazy" decoding="async">
+  <figcaption>수직형(0U) 랙 PDU 예시 — Lenovo 0U Basic PDU
+  <span class="src">출처: <a href="https://lenovopress.lenovo.com/tips0797-lenovo-0u-basic-pdu">Lenovo Press, Lenovo 0U Basic PDU</a></span></figcaption>
+</figure>
+
 **서버 PSU(server PSU)**는 서버 안에서 AC를 DC로 바꿔주는 장치입니다. 메인보드와
 CPU, GPU가 쓰는 건 DC거든요. 서버 뒤판에서 전원 코드가 꽂히는 그 자리가 PSU입니다.
 
